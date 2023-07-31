@@ -1,24 +1,15 @@
 #include <SFML/Graphics.hpp>
+#include "snake.h"
+#include <iostream>
 
-int main()
-{
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+int main() {
+    sf::Vector2i snake_position = {0,0};
+    size_t snake_size = 3;
+    snake::Snake tested_snake(snake_position, snake_size);
 
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear();
-        window.draw(shape);
-        window.display();
+    for (size_t i = 0; i < snake_size + 1; ++i) {
+        std::cout << std::boolalpha << tested_snake.isSnake(snake_position) << std::endl;
+        ++snake_position.y;
     }
-
-    return 0;
+    std::cout << std::boolalpha << (snake_size == tested_snake.getSize()) << std::endl;
 }

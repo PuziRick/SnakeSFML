@@ -8,8 +8,10 @@ set(CMAKE_CXX_STANDARD 17)
 project(${PROJECT_NAME})
 
 # Установка исходных и заголовочных файлов
-set(SOURCE src/main.cpp)
-set(HEADER "")
+set(SOURCE  src/main.cpp
+            src/snake.cpp
+    )
+set(HEADER  include/snake.h)
 
 # Указываем путь к собранной и установленной SFML
 set(SFML_DIR "D:/SFML")
@@ -20,13 +22,24 @@ list(APPEND CMAKE_PREFIX_PATH "${SFML_DIR}")
 # Умоляем собрать исполняемый файл со статической библиотекой SFML
 set(SFML_STATIC_LIBRARIES TRUE)
 
-
 # Вычисляем по IP и добавляем SFML
 find_package(SFML COMPONENTS system window graphics REQUIRED)
 
 # Создаем исполняемый файл
 add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS})
 
+option(BUILD_TEST "Build tests" OFF)
+
+set(TEST_HEADER test/my_test_framework.h
+                test/test_snake.h
+)
+
+if (BUILD_TEST)
+    include_directories(../include)
+    add_executable(test_exe test/test_all.cpp ${HEADERS} ${TEST_HEADER})
+    target_link_libraries(test_exe sfml-system sfml-window sfml-graphics)
+endif()
+
 # Линкуем хедеры и SFML
 include_directories(include)
-target_link_libraries(${PROJECT_NAME} sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
+target_link_libraries(${PROJECT_NAME} sfml-system sfml-window sfml-graphics)
