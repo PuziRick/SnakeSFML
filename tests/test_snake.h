@@ -4,7 +4,6 @@
 #include "my_test_framework.h"
 #include "snake.h"
 
-
 void checkSize(const snake::Snake& _snake, size_t size) {
     // если размер меньше 2 (голова и хвост), принудительно ставиться 3
     if (size < 2) {
@@ -32,6 +31,7 @@ void checkDirection(const snake::Snake& _snake) {
 }
 
 void TestSnakeInitialization() {
+    // Проводим 10 тестов по созданию змейки с длиной от 0 до 9
     size_t count_of_test = 10;
     sf::Vector2i started_pos = {0,0};
     size_t started_size = 0;

@@ -1,0 +1,13 @@
+# задаем название тестового файла
+set(TESTS_NAME TestApp)
+
+# забераем все .cpp файлы и собираем тестовый исполняемый файл
+file(GLOB TEST_SOURCES "${PROJECT_SOURCE_DIR}/tests/*.cpp")
+add_executable(${TESTS_NAME} ${TEST_SOURCES})
+
+# указываем место сборки исполняемого файла
+set_target_properties(${TESTS_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
+
+# линкуем библиотеки
+target_link_libraries(${TESTS_NAME} LIB_SNAKE_S)
+target_link_libraries(${TESTS_NAME} sfml-system sfml-window sfml-graphics)
