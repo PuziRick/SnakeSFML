@@ -92,17 +92,3 @@ if((NOT BUILD_TESTS) OR (NOT BUILD_LIBS))
 else()
     add_subdirectory(tests)
 endif()
-
-#add_library(SNAKE_LIB src/snake.cpp include/snake.h)
-#
-#target_link_libraries(SNAKE_LIB sfml-system sfml-window sfml-graphics)
-#
-#if (BUILD_TESTS)
-#    set(TESTS_NAME TestApp)
-#    file(GLOB TEST_SOURCES "${PROJECT_SOURCE_DIR}/tests/*.cpp")
-#    add_executable(${TESTS_NAME} ${TEST_SOURCES})
-#
-#    set_target_properties(${TESTS_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
-#    target_link_libraries(${TESTS_NAME} SNAKE_LIB)
-#    target_link_libraries(${TESTS_NAME} sfml-system sfml-window sfml-graphics)
-#endif()
