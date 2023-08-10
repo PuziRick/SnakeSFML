@@ -44,5 +44,5 @@ void TestSnakeInitialization() {
 }
 
 void TestSnake() {
-    RUN_TEST(TestSnakeInitialization);
+    RUN_TEST_TAB(TestSnakeInitialization,1);
 }

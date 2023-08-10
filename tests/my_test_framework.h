@@ -99,12 +99,14 @@ void AssertImpl(bool value, const std::string& expr_str, const std::string& file
 // Для удобной работы с тестами (передает функцию, получаем изящную надпись)
 // запускать через макрос
 template <typename Function>
-void RunTestImpl(Function func, const std::string& func_name) {
+void RunTestImpl(Function func, const std::string& func_name, int num_of_tab = 0) {
     func();
+    for (int i = 0; i < num_of_tab; ++i) {
+        std::cerr << "  ";
+    }
     std::cerr << func_name << " OK" << std::endl;
 }
 
 // Делает магию
 #define RUN_TEST(func) RunTestImpl((func), (#func))
-
-
+#define RUN_TEST_TAB(func, tab) RunTestImpl((func), (#func), tab)
