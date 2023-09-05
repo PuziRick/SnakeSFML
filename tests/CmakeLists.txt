@@ -11,6 +11,8 @@ set_target_properties(${TESTS_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE
 # линкуем библиотеки
 target_link_libraries(${TESTS_NAME} LIB_SNAKE_S)
 target_link_libraries(${TESTS_NAME} LIB_TILE_SET_S)
+target_link_libraries(${TESTS_NAME} LIB_MAP_S)
+
 target_link_libraries(${TESTS_NAME} sfml-system sfml-window sfml-graphics)
 
 file(COPY ${PROJECT_SOURCE_DIR}/tests/images/test_images.png DESTINATION ${CMAKE_BINARY_DIR}/tests/images)
