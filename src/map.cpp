@@ -48,6 +48,10 @@ int snake::Map::at(sf::Vector2u pos) {
     return _map[pos.y][pos.x];
 }
 
+int snake::Map::at(sf::Vector2u pos) const {
+    return _map[pos.y][pos.x];
+}
+
 void snake::Map::createNewMap(sf::Vector2u size_of_map, size_t num_of_textures) {
     _map = std::move(generateMap(size_of_map, num_of_textures));
     num_of_textures = num_of_textures;

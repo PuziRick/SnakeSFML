@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Определяем проект
 project(${PROJECT_NAME})
-option(BUILD_TESTS "Включить модульное тестирование" ON)
-option(BUILD_LIBS "Включить сборку библиотек" ON)
+option(BUILD_TESTS "Включить модульное тестирование" OFF)
+option(BUILD_LIBS "Включить сборку библиотек" OFF)
 
 # ===================================================================
 #                       Настройка компилятора
@@ -92,3 +92,9 @@ if((NOT BUILD_TESTS) OR (NOT BUILD_LIBS))
 else()
     add_subdirectory(tests)
 endif()
+
+# ===================================================================
+#                         Копируем спрайты
+# ===================================================================
+file(COPY ${PROJECT_SOURCE_DIR}/images/snake.png DESTINATION ${CMAKE_BINARY_DIR}/images)
+file(COPY ${PROJECT_SOURCE_DIR}/images/grass.png DESTINATION ${CMAKE_BINARY_DIR}/images)
