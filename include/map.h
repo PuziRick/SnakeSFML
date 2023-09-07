@@ -16,6 +16,8 @@ public:
     int at(sf::Vector2u pos) const;                                                                  // доступ к ячейки карты с координатой pos
     void createNewMap(sf::Vector2u size_of_map, size_t num_of_textures);                             // генерирует новую карту
     const std::vector<std::vector<int>>& getMap() const;                                             // доступ к карте в виде константной ссылки
+
+    void loadMap(std::vector<std::vector<int>>& map);                                                // Загрузить свою карту
 private:
     static std::vector<std::vector<int>> generateMap(sf::Vector2u size_of_map, size_t num_of_text);  // вспомогательный метод создаёт случайный массив для новой карты
 };

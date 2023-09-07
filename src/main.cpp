@@ -5,6 +5,26 @@
 #include <vector>
 #include <map>
 
+std::vector<std::vector<int>> creatMap(size_t width, size_t height) {
+    std::vector<std::vector<int>> result_map;
+    result_map.reserve(height);
+    for (size_t y = 0; y < height; ++y) {
+        std::vector<int> map_x;
+        map_x.reserve(width);
+        for (size_t x = 0; x < width; ++x) {
+            if (y == 0 || y + 1 == height || x == 0 || x + 1 == width) {
+                map_x.push_back(0);
+            } else if (y % 2 == 0) {
+                map_x.push_back(((x % 2 == 0) ? 2 : 1));
+            } else {
+                map_x.push_back(y % 2 + x % 2);
+            }
+        }
+        result_map.push_back(std::move(map_x));
+    }
+    return result_map;
+}
+
 int main() {
     snake::Snake _snake({0,0},4);
     snake::TileSet _tile_set_snake("images/snake.png", {64,64}, 0.5f);
@@ -28,9 +48,18 @@ int main() {
         {snake::TypeOfSnakeBodyTileset::INVERSE_L_BODY, {3,2}}
     };
 
-    std::vector<sf::Vector2u> pos_map = {{0,0}, {1,0}, {2,0}, {3,0}, {4,0}, {0,1}, {1,1}, {2,1}, {3,1}, {4,1}, {0,2}, {1,2}, {2,2}, {3,2}, {4,2}};
+    std::vector<sf::Vector2u> pos_map = {{3,0}, {0,0}, {5,0}};
 
-    snake::Map _map({20,20}, 15);
+    snake::Map _map({20,20}, 3);
+    auto tmp = creatMap(20,20);
+    _map.loadMap(tmp);
+
+    for (unsigned int y = 0; y < _map.getSizeOfMap().y; ++y) {
+        for (unsigned int x = 0; x < _map.getSizeOfMap().x; ++x) {
+            std::cout << _map.at({x,y}) << " ";
+        }
+        std::cout << std::endl;
+    }
 
     snake::DrawSnake draw_snake(_window, _tile_set_snake, _snake, pos_tiles);
     snake::DrawMap draw_map(_window, _tile_set_map, _map, pos_map);

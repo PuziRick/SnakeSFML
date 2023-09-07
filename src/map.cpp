@@ -60,3 +60,7 @@ void snake::Map::createNewMap(sf::Vector2u size_of_map, size_t num_of_textures) 
 const std::vector<std::vector<int>> &snake::Map::getMap() const {
     return _map;
 }
+
+void snake::Map::loadMap(std::vector<std::vector<int>> &map) {
+    _map = std::move(map);
+}
