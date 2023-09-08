@@ -12,7 +12,7 @@ namespace snake {
 
 class Drawable {
 public:
-    Drawable(sf::RenderWindow& window, snake::TileSet& tile_set);
+    Drawable(sf::RenderWindow& window, snake::TileSet tile_set);
     virtual ~Drawable() = default;
     virtual void Draw() = 0;
     
@@ -20,10 +20,10 @@ public:
     static void setSpritePositionAndScale(sf::Sprite& sprite, const sf::Vector2i& position, const sf::Vector2u& tile_size, const sf::Vector2f scale);
 
     sf::RenderWindow& getWindowRef();
-    snake::TileSet& getTileSetRef();
+    snake::TileSet getTileSet();
 private:
     sf::RenderWindow& _window_ref;    // ссылка на окно для рендера 
-    snake::TileSet& _tile_set;        // ссылка на тайл-сет объекта
+    snake::TileSet _tile_set;        // ссылка на тайл-сет объекта
 };
 
 // Все возможные типы тайлсета для змейки
@@ -40,7 +40,7 @@ enum class TypeOfSnakeBodyTileset {
 
 class DrawSnake final : public Drawable {
 public:
-    DrawSnake(sf::RenderWindow& window, snake::TileSet& tile_set, const snake::Snake& snake_ref,
+    DrawSnake(sf::RenderWindow& window, snake::TileSet tile_set, const snake::Snake& snake_ref,
               std::map<TypeOfSnakeBodyTileset, sf::Vector2u>& pos_to_tiles);
     void Draw() override;
 private:
@@ -57,7 +57,7 @@ private:
 
 class DrawMap final : public Drawable {
 public:
-    DrawMap(sf::RenderWindow& window, snake::TileSet& tile_set, const snake::Map& map, std::vector<sf::Vector2u>& pos_to_tiles);
+    DrawMap(sf::RenderWindow& window, snake::TileSet tile_set, const snake::Map& map, std::vector<sf::Vector2u>& pos_to_tiles);
     void Draw() override;
 private:
     const snake::Map& _map_ref;              // констатнтая ссылка на карту
