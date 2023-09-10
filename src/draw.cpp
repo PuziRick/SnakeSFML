@@ -1,7 +1,7 @@
 #include "draw.h"
 #include <iterator>
 
-snake::Drawable::Drawable(sf::RenderWindow& window, snake::TileSet tile_set)
+snake::Drawable::Drawable(sf::RenderWindow& window, snake::TileSet& tile_set)
     : _window_ref(window)
     , _tile_set(tile_set) {
 }
@@ -15,11 +15,11 @@ sf::RenderWindow &snake::Drawable::getWindowRef()
     return _window_ref;
 }
 
-snake::TileSet snake::Drawable::getTileSet() {
+snake::TileSet& snake::Drawable::getTileSetRef() {
     return _tile_set;
 }
 
-snake::DrawSnake::DrawSnake(sf::RenderWindow& window, snake::TileSet tile_set, const snake::Snake& snake_ref,
+snake::DrawSnake::DrawSnake(sf::RenderWindow& window, snake::TileSet& tile_set, const snake::Snake& snake_ref,
               std::map<TypeOfSnakeBodyTileset, sf::Vector2u>& pos_to_tiles) 
     : Drawable(window, tile_set)
     , _snake_ref(snake_ref)
@@ -33,18 +33,18 @@ void snake::DrawSnake::Draw() {
     for (auto it = _snake_ref.cbegin(); it != _snake_ref.cend(); ++it) {
         if (snake_i == 0) {
             // для головы
-            auto _sprite = getTileSet().getSprite(choiseSnakeHead(it->_direction));
-            setSpritePositionAndScale(_sprite, it->_position, getTileSet().getTileSize(), getTileSet().getScale());
+            auto _sprite = getTileSetRef().getSprite(choiseSnakeHead(it->_direction));
+            setSpritePositionAndScale(_sprite, it->_position, getTileSetRef().getTileSize(), getTileSetRef().getScale());
             getWindowRef().draw(_sprite);
         } else if (snake_i + 1 == _snake_ref.getSize()) {
             // для хвоста
-            auto _sprite = getTileSet().getSprite(choiseSnakeTail(std::prev(it)->_direction));
-            setSpritePositionAndScale(_sprite, it->_position, getTileSet().getTileSize(), getTileSet().getScale());
+            auto _sprite = getTileSetRef().getSprite(choiseSnakeTail(std::prev(it)->_direction));
+            setSpritePositionAndScale(_sprite, it->_position, getTileSetRef().getTileSize(), getTileSetRef().getScale());
             getWindowRef().draw(_sprite);
         } else {
             // для тела
-            auto _sprite = getTileSet().getSprite(choiceSnakeBodyTileset(it));
-            setSpritePositionAndScale(_sprite, it->_position, getTileSet().getTileSize(), getTileSet().getScale());
+            auto _sprite = getTileSetRef().getSprite(choiceSnakeBodyTileset(it));
+            setSpritePositionAndScale(_sprite, it->_position, getTileSetRef().getTileSize(), getTileSetRef().getScale());
             getWindowRef().draw(_sprite);
         }
         ++snake_i;
@@ -146,7 +146,7 @@ bool snake::DrawSnake::isVerticalDirection(Direction dir) {
     return dir == Direction::UP || dir == Direction::DOWN;
 }
 
-snake::DrawMap::DrawMap(sf::RenderWindow &window, snake::TileSet tile_set, const snake::Map &map_ref, std::vector<sf::Vector2u>& pos_to_tiles)
+snake::DrawMap::DrawMap(sf::RenderWindow &window, snake::TileSet& tile_set, const snake::Map &map_ref, std::vector<sf::Vector2u>& pos_to_tiles)
     : Drawable(window, tile_set)
     , _map_ref(map_ref)
     , _pos_to_tiles(std::move(pos_to_tiles)) {
@@ -155,8 +155,8 @@ snake::DrawMap::DrawMap(sf::RenderWindow &window, snake::TileSet tile_set, const
 void snake::DrawMap::Draw() {
     for (size_t y = 0; y < _map_ref.getSizeOfMap().y; ++y) {
         for (size_t x = 0; x < _map_ref.getSizeOfMap().x; ++x) {
-            auto _sprite = getTileSet().getSprite(_pos_to_tiles[static_cast<size_t>(_map_ref.at({static_cast<unsigned int>(x), static_cast<unsigned int>(y)}))]);
-            setSpritePositionAndScale(_sprite, {static_cast<int>(x), static_cast<int>(y)}, getTileSet().getTileSize(), getTileSet().getScale());
+            auto _sprite = getTileSetRef().getSprite(_pos_to_tiles[static_cast<size_t>(_map_ref.at({static_cast<unsigned int>(x), static_cast<unsigned int>(y)}))]);
+            setSpritePositionAndScale(_sprite, {static_cast<int>(x), static_cast<int>(y)}, getTileSetRef().getTileSize(), getTileSetRef().getScale());
             getWindowRef().draw(_sprite);
         }
     }

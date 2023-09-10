@@ -55,9 +55,6 @@ struct GameSettings {
     WindowSettings _window_conf;   // настройки окна
 };
 
-
-std::vector<std::vector<int>> creatMap(size_t width, size_t height);
-
 // to do сделать удобный загрузчик настроек (например из файла)
 GameSettings LoaderSettings();
 

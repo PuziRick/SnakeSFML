@@ -39,15 +39,13 @@ snake::DrawSnake snake::creatDrawSnake(snake::Snake &snake, snake::TileSet& tile
 
 snake::Engine::Engine(snake::settings::GameSettings settings) 
     : _window(sf::VideoMode(settings._window_conf._widescreen_x, settings._window_conf._widescreen_y), settings._window_conf._window_name) 
-    , _snake(creatSnake(settings._snake_conf))
-    , _map(creatMap(settings._map_conf))
+    , _snake(std::move(creatSnake(settings._snake_conf)))
+    , _map(std::move(creatMap(settings._map_conf)))
     , _snake_tiles(creatTileSet(settings._snake_conf._tiles))
     , _map_tiles(creatTileSet(settings._map_conf._tiles))
     , _snake_draw(creatDrawSnake(_snake, _snake_tiles, _window, settings._snake_conf))
     , _map_draw(creatDrawMap(_map, _map_tiles, _window, settings._map_conf))
     , _random(_map.getSizeOfMap()) {
-    auto new_map = settings::creatMap(_map.getSizeOfMap().x, _map.getSizeOfMap().y);
-    _map.loadMap(new_map);
 }
 
 void snake::Engine::start() {

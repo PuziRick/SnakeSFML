@@ -32,26 +32,6 @@ snake::settings::GameSettings::GameSettings(SnakeSettings snake_conf, MapSetting
     , _window_conf(window_conf) {
 }
 
-std::vector<std::vector<int>> snake::settings::creatMap(size_t width, size_t height) {
-    std::vector<std::vector<int>> result_map;
-    result_map.reserve(height);
-    for (size_t y = 0; y < height; ++y) {
-        std::vector<int> map_x;
-        map_x.reserve(width);
-        for (size_t x = 0; x < width; ++x) {
-            if (y == 0 || y + 1 == height || x == 0 || x + 1 == width) {
-                map_x.push_back(0);
-            } else if (y % 2 == 0) {
-                map_x.push_back(((x % 2 == 0) ? 2 : 1));
-            } else {
-                map_x.push_back(y % 2 + x % 2);
-            }
-        }
-        result_map.push_back(std::move(map_x));
-    }
-    return result_map;
-}
-
 snake::settings::GameSettings snake::settings::LoaderSettings()
 {
     const sf::Vector2u WIDESCREEN(640,640);
