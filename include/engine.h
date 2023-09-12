@@ -10,6 +10,7 @@
 #include "draw.h"
 #include "tile_set.h"
 #include "settings.h"
+#include "eat.h"
 
 namespace snake {
 
@@ -19,6 +20,7 @@ snake::Snake creatSnake(snake::settings::SnakeSettings snake_setting);
 snake::Map creatMap(snake::settings::MapSettings map_setting);
 snake::DrawMap creatDrawMap(snake::Map& map, snake::TileSet& tiles, sf::RenderWindow& window, snake::settings::MapSettings mapSet);
 snake::DrawSnake creatDrawSnake(snake::Snake& snake, snake::TileSet& tiles, sf::RenderWindow& window, snake::settings::SnakeSettings snakeSet);
+snake::DrawEat creatDrawEat(snake::Eat& eat, snake::TileSet& tiles, sf::RenderWindow& window, snake::settings::EatSettings eatSet);
 
 // Объекты для создания случайных координат еды
 struct RandomGen {
@@ -35,22 +37,29 @@ struct RandomGen {
 
 class Engine {
 public:
-    Engine(settings::GameSettings settings); // Передаём основные настройки
+    Engine(settings::GameSettings settings);  // Передаём основные настройки
     void start();                             // основная функция игры
 private:
     sf::RenderWindow _window;                 // окно для отрисовки
     Snake _snake;                             // змейка
     Map _map;                                 // карта
-    snake::TileSet _snake_tiles;              //
-    snake::TileSet _map_tiles;                //
+    snake::TileSet _snake_tiles;              // тайлсет змейки
+    snake::TileSet _map_tiles;                // тайлсет карты
+    snake::TileSet _eat_tiles;                // тайлсет еды
+
     DrawSnake _snake_draw;                    // отрисовщик змейки
     DrawMap _map_draw;                        // отрисовщик карты
-    
-    RandomGen _random;                        // генератор координат еды
-    sf::Vector2i foodCoord;                   // координаты еды
-private:
-    //sf::Vector2i creatFood();                 // создает координаты еды
 
+    RandomGen _random;                        // генератор координат еды
+    Eat _eat;                                 // едa
+    DrawEat _eat_draw;                        // отрисовщик еды
+
+    float _game_speed;                        // скорость игры
+private:
+    bool processInput();                      // обработчик нажатых клавишь
+    sf::Vector2i creatFood();                 // создает координаты еды
+    bool relocateFromOutsideTheMap();         // если змейка выходит за границу, переместить её с зеркальной стороны
+    bool eating();                            // приятного аппетита
 };
 
 } // конец namespace snake

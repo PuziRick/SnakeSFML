@@ -47,12 +47,27 @@ struct MapSettings {
     std::vector<sf::Vector2u> _pos_to_tiles; // координаты тайлов в тайлсете
 };
 
+struct EatSettings {
+    EatSettings(TileSetSettings tile_set, std::vector<sf::Vector2u>& pos_to_tile);
+    TileSetSettings _tiles;                  // тайлсет
+    std::vector<sf::Vector2u> _pos_to_tiles; // координаты тайлов в тайлсете
+};
+
+// скорость игры (подобрана вручную)
+enum class GAME_SPEED : int {
+    NORMAL = 120,
+    FAST = 80,
+    SLOWLY = 180
+};
+
 // Общие настройки
 struct GameSettings {
-    GameSettings(SnakeSettings snake_conf, MapSettings map_conf, WindowSettings window_conf);
+    GameSettings(SnakeSettings snake_conf, MapSettings map_conf, WindowSettings window_conf, EatSettings eat_conf ,GAME_SPEED game_speed);
     SnakeSettings _snake_conf;     // настройки змейки
     MapSettings _map_conf;         // настройки карты
     WindowSettings _window_conf;   // настройки окна
+    EatSettings _eat_conf;     // тайлсет еды
+    GAME_SPEED _game_speed;        // скорость игры
 };
 
 // to do сделать удобный загрузчик настроек (например из файла)

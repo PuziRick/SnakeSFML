@@ -26,10 +26,18 @@ snake::settings::MapSettings::MapSettings(TileSetSettings tile_set, std::vector<
     , _pos_to_tiles(std::move(pos_to_tile)) {
 }
 
-snake::settings::GameSettings::GameSettings(SnakeSettings snake_conf, MapSettings map_conf, WindowSettings window_conf)
+snake::settings::EatSettings::EatSettings(TileSetSettings tile_set, std::vector<sf::Vector2u> &pos_to_tile)
+    : _tiles(tile_set)
+    , _pos_to_tiles(std::move(pos_to_tile)) {
+}
+
+
+snake::settings::GameSettings::GameSettings(SnakeSettings snake_conf, MapSettings map_conf, WindowSettings window_conf, EatSettings eat_conf, GAME_SPEED game_speed)
     : _snake_conf(snake_conf)
     , _map_conf(map_conf)
-    , _window_conf(window_conf) {
+    , _window_conf(window_conf)
+    , _eat_conf(eat_conf)
+    , _game_speed(game_speed) {
 }
 
 snake::settings::GameSettings snake::settings::LoaderSettings()
@@ -42,12 +50,15 @@ snake::settings::GameSettings snake::settings::LoaderSettings()
 
     const std::string SNAKE_IMAGE_NAME = "images/snake.png";
     const sf::Vector2i SNAKE_START_POS(4,4);
-    const size_t SNAKE_START_SIZE = 3;
+    const size_t SNAKE_START_SIZE = 15;
 
     const std::string MAP_IMAGE_NAME = "images/grass.png";
     std::vector<sf::Vector2u> map_pos_tiles = {{3,0}, {0,0}, {5,0}};
     const sf::Vector2u MAP_SIZE(20,20);
     const int MAP_NUM_OF_TEXTURES = 1;
+
+    const std::string EAT_IMAGE_NAME = "images/apple.png";
+    std::vector<sf::Vector2u> eat_pos_to_tiles = {{0,0}};
 
     std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> snake_pos_tiles = {
         {snake::TypeOfSnakeBodyTileset::HEAD_UP, {0,0}},
@@ -74,5 +85,11 @@ snake::settings::GameSettings snake::settings::LoaderSettings()
     TileSetSettings map_tileset(MAP_IMAGE_NAME, TILES_SIZE, SCALE);
     MapSettings map_conf(map_tileset, map_pos_tiles, MAP_SIZE, MAP_NUM_OF_TEXTURES);
 
-    return GameSettings(snake_conf, map_conf, window_conf);
+    TileSetSettings eat_tileset(EAT_IMAGE_NAME, TILES_SIZE, SCALE);
+    EatSettings eat_conf(eat_tileset, eat_pos_to_tiles);
+
+    GAME_SPEED game_speed = GAME_SPEED::NORMAL;
+
+    return GameSettings(snake_conf, map_conf, window_conf, eat_conf, game_speed);
 }
+

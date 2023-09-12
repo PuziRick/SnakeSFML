@@ -7,6 +7,7 @@
 #include "tile_set.h"
 #include "snake.h"
 #include "map.h"
+#include "eat.h"
 
 namespace snake {
 
@@ -62,6 +63,15 @@ public:
 private:
     const snake::Map& _map_ref;              // констатнтая ссылка на карту
     std::vector<sf::Vector2u> _pos_to_tiles; // Перечислены позиции с текстурами
+};
+
+class DrawEat : public Drawable {
+public:
+    DrawEat(sf::RenderWindow& window, snake::TileSet& tile_set, snake::Eat& eat, std::vector<sf::Vector2u>& pos_to_tiles);
+    void Draw() override;
+private:
+    snake::Eat& _eat_ref;                    // ссылка на объект "еда"
+    std::vector<sf::Vector2u> _pos_to_tiles; // перечисление позиций с текстурами
 };
 
 } // конец namespace snake

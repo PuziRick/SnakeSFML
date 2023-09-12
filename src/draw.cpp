@@ -161,3 +161,15 @@ void snake::DrawMap::Draw() {
         }
     }
 }
+
+snake::DrawEat::DrawEat(sf::RenderWindow &window, snake::TileSet &tile_set, snake::Eat &eat, std::vector<sf::Vector2u>& pos_to_tiles) 
+    : Drawable(window, tile_set) 
+    , _eat_ref(eat)
+    , _pos_to_tiles(std::move(pos_to_tiles)){
+}
+
+void snake::DrawEat::Draw() {
+    auto _sprite = getTileSetRef().getSprite(_pos_to_tiles[0]);
+    setSpritePositionAndScale(_sprite, _eat_ref._coordinate, getTileSetRef().getTileSize(), getTileSetRef().getScale());
+    getWindowRef().draw(_sprite);
+}
