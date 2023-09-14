@@ -42,7 +42,7 @@ snake::settings::GameSettings::GameSettings(SnakeSettings snake_conf, MapSetting
 
 snake::settings::GameSettings snake::settings::LoaderSettings()
 {
-    const sf::Vector2u WIDESCREEN(640,640);
+    const sf::Vector2u WIDESCREEN(960,640);
     const std::string WINDOW_NAME = "SnakeGame";
 
     const sf::Vector2u TILES_SIZE(64,64);
@@ -50,12 +50,12 @@ snake::settings::GameSettings snake::settings::LoaderSettings()
 
     const std::string SNAKE_IMAGE_NAME = "images/snake.png";
     const sf::Vector2i SNAKE_START_POS(4,4);
-    const size_t SNAKE_START_SIZE = 15;
+    const size_t SNAKE_START_SIZE = 3;
 
     const std::string MAP_IMAGE_NAME = "images/grass.png";
-    std::vector<sf::Vector2u> map_pos_tiles = {{3,0}, {0,0}, {5,0}};
-    const sf::Vector2u MAP_SIZE(20,20);
-    const int MAP_NUM_OF_TEXTURES = 1;
+    const sf::Vector2u MAP_SIZE(30,20);
+    const int MAP_NUM_OF_TEXTURES = 3;
+    std::vector<sf::Vector2u> map_pos_tiles = {{0,0}, {1,0}, {2,0}};
 
     const std::string EAT_IMAGE_NAME = "images/apple.png";
     std::vector<sf::Vector2u> eat_pos_to_tiles = {{0,0}};
