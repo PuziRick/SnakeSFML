@@ -1,8 +1,0 @@
-SNAKE_START_SIZE = 3
-TAIL_START_SIZE    = 11
-COMUNISM =   2
- MAP_TILESET_NAME= "images/grass.png"
- TITAN_QUEST    =  2
-
-  SNAKE_TILESET_NAME =        "images/snake.png"
-EAT_IMAGE_NAME     = "images/apple.png"

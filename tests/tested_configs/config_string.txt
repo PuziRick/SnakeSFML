@@ -1,0 +1,31 @@
+NORMAL_FORMAT = "string 1"
+
+              EXTRA_SPACE_IN_THE_BEGINNING_OF_THE_LINE = "string 2"
+EXTRA_SPACE_BEFORE_THE_SIGN_EQUAL              = "string 3"
+
+EXTRA_SPACE_AFTER_THE_SIGN_EQUAL = "string 4"
+EXTRA_SPACE_AT_THE_END_OF_THE_LINE = "string 5"              
+
+   EXTRA_SPACE   = "string 6"    
+
+WITHOUT_SPACE="string 7"
+
+WITH_LINE_BREAK
+=
+"string 8"
+
+      WITH_LINE_BREAK_EXTRA_SPACE_IN_THE_BEGINNING_OF_THE_FIRST_LINE
+=
+"string 9"
+
+WITH_LINE_BREAK_EXTRA_SPACE_BEFORE_THE_SIGN_EQUAL
+            =
+"string 10"
+
+WITH_LINE_BREAK_EXTRA_SPACE_AFTER_THE_SIGN_EQUAL
+=
+                       "string 11"
+
+SAVE_SPACE_IN_STRING_VALUE_1 = "       string 12"
+SAVE_SPACE_IN_STRING_VALUE_2 = "string        13"
+SAVE_SPACE_IN_STRING_VALUE_3 = "string 14       "
