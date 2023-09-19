@@ -23,15 +23,13 @@ struct Data {
 size_t findNameOfVaribale(std::string_view& str, size_t start_pos = 0); // находит название переменной и возвращает позицию за ней не равную пробелу
 size_t findStringValue(std::string_view& str, size_t start_pos = 0);    // находит значение строки и возвращает позицию за ней не равную пробелу
 size_t findValue(std::string_view& str, size_t start_pos = 0);          // находит в str значение переменной и возвращает позицию за ней не равную пробелу
-//size_t findPairBracesChar(std::string_view& str, size_t start_pos = 0); // находим в str п
-
 
 // Функции ParseName ... ParseArray модифицируют start_pos
 Data ParseName(std::string_view str, size_t& start_pos);                // выделяет имя переменной из строки
 Data ParseStringValue(std::string_view str, size_t& start_pos);         // выделяет значение строковой переменной из строки
 Data ParseValue(std::string_view str, size_t& start_pos);               // выделяет значение переменной из строки
 
-//std::vector<Data> ParseArray(std::string_view str, size_t& start_pos, size_t last_pos);  // выделяет массив значений из строки
+std::vector<Data> ParseArray(std::string_view str, size_t& start_pos);  // выделяет массив значений из строки
 
 std::string combineSettingsIntoOneLine(std::ifstream& file); // объединить настройки из потока file в одну строку
 std::vector<Data> ParseSetting(std::ifstream& file);         // разбивает входной поток file на вектор настроек
@@ -40,11 +38,11 @@ class ConfigReader {
 public:
     explicit ConfigReader(const std::string& file_name);
     std::ifstream& getFile();
-    //std::vector<Data> getAllSettings();                                            // возвращает все настройки
-    //std::vector<std::shared_ptr<Data>>& findSetting(std::string& name_of_setting); // возрващает значение для указанной переменной
+    std::vector<Data>& getAllSettings();                                                 // возвращает все настройки
+    std::vector<std::shared_ptr<Data>>& findSetting(const std::string& name_of_setting); // возрващает значение для указанной переменной
 private:
     std::ifstream _file;
-    //std::vector<Data> _settings;
+    std::vector<Data> _settings;
 };
 
 } // конец namespace snake
