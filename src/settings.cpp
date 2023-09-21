@@ -1,4 +1,5 @@
 #include "settings.h"
+#include <unordered_map>
 
 snake::settings::WindowSettings::WindowSettings(sf::Vector2u widescreen, std::string name)
     : _widescreen_x(widescreen.x)
@@ -40,56 +41,113 @@ snake::settings::GameSettings::GameSettings(SnakeSettings snake_conf, MapSetting
     , _game_speed(game_speed) {
 }
 
-snake::settings::GameSettings snake::settings::LoaderSettings()
-{
-    const sf::Vector2u WIDESCREEN(960,640);
-    const std::string WINDOW_NAME = "SnakeGame";
-
-    const sf::Vector2u TILES_SIZE(64,64);
-    const float SCALE = 0.5f;
-
-    const std::string SNAKE_IMAGE_NAME = "images/snake.png";
-    const sf::Vector2i SNAKE_START_POS(4,4);
-    const size_t SNAKE_START_SIZE = 3;
-
-    const std::string MAP_IMAGE_NAME = "images/grass.png";
-    const sf::Vector2u MAP_SIZE(30,20);
-    const int MAP_NUM_OF_TEXTURES = 3;
-    std::vector<sf::Vector2u> map_pos_tiles = {{0,0}, {1,0}, {2,0}};
-
-    const std::string EAT_IMAGE_NAME = "images/apple.png";
-    std::vector<sf::Vector2u> eat_pos_to_tiles = {{0,0}};
-
-    std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> snake_pos_tiles = {
-        {snake::TypeOfSnakeBodyTileset::HEAD_UP, {0,0}},
-        {snake::TypeOfSnakeBodyTileset::HEAD_DOWN, {2,0}},
-        {snake::TypeOfSnakeBodyTileset::HEAD_LEFT, {3,0}},
-        {snake::TypeOfSnakeBodyTileset::HEAD_RIGHT, {1,0}},
-        {snake::TypeOfSnakeBodyTileset::TAIL_UP, {0,1}},
-        {snake::TypeOfSnakeBodyTileset::TAIL_DOWN, {2,1}},
-        {snake::TypeOfSnakeBodyTileset::TAIL_LEFT, {3,1}},
-        {snake::TypeOfSnakeBodyTileset::TAIL_RIGHT, {1,1}},
-        {snake::TypeOfSnakeBodyTileset::HORIZONTAL_BODY, {1,3}},
-        {snake::TypeOfSnakeBodyTileset::VERTICAL_BODY, {0,3}},
-        {snake::TypeOfSnakeBodyTileset::RUSSIAN_G_LETTER_BODY, {1,2}},
-        {snake::TypeOfSnakeBodyTileset::INVERSE_RUSSIAN_G_LETTER_BODY, {2,2}},
-        {snake::TypeOfSnakeBodyTileset::L_BODY, {0,2}},
-        {snake::TypeOfSnakeBodyTileset::INVERSE_L_BODY, {3,2}}
+// позаимствовал у сообщества
+// https://stackoverflow.com/questions/7163069/c-string-to-enum
+snake::TypeOfSnakeBodyTileset snake::settings::convertStringToTypeOfSnake(const std::string &type_str) {
+    static std::unordered_map<std::string, snake::TypeOfSnakeBodyTileset> converter = {
+        {"HEAD_UP", snake::TypeOfSnakeBodyTileset::HEAD_UP} ,
+        {"HEAD_DOWN", snake::TypeOfSnakeBodyTileset::HEAD_DOWN} ,
+        {"HEAD_LEFT", snake::TypeOfSnakeBodyTileset::HEAD_LEFT} ,
+        {"HEAD_RIGHT", snake::TypeOfSnakeBodyTileset::HEAD_RIGHT} ,
+        {"TAIL_UP", snake::TypeOfSnakeBodyTileset::TAIL_UP } ,
+        {"TAIL_DOWN", snake::TypeOfSnakeBodyTileset::TAIL_DOWN } ,
+        {"TAIL_LEFT", snake::TypeOfSnakeBodyTileset::TAIL_LEFT } ,
+        {"TAIL_RIGHT", snake::TypeOfSnakeBodyTileset::TAIL_RIGHT } ,
+        {"HORIZONTAL_BODY", snake::TypeOfSnakeBodyTileset::HORIZONTAL_BODY } ,
+        {"VERTICAL_BODY", snake::TypeOfSnakeBodyTileset::VERTICAL_BODY } ,
+        {"RUSSIAN_G_LETTER_BODY", snake::TypeOfSnakeBodyTileset::RUSSIAN_G_LETTER_BODY } ,
+        {"INVERSE_RUSSIAN_G_LETTER_BODY", snake::TypeOfSnakeBodyTileset::INVERSE_RUSSIAN_G_LETTER_BODY } ,
+        {"L_BODY", snake::TypeOfSnakeBodyTileset::L_BODY } ,
+        {"INVERSE_L_BODY", snake::TypeOfSnakeBodyTileset::INVERSE_L_BODY }
     };
+    auto it = converter.find(type_str);
+    if (it != converter.end()) {
+        return it->second;
+    } else {
+        return snake::TypeOfSnakeBodyTileset::HEAD_UP;
+    }
+}
 
+snake::settings::GAME_SPEED snake::settings::convertStringToGameSpeed(const std::string &type_str) {
+    static std::unordered_map<std::string, snake::settings::GAME_SPEED> converter = {
+        {"NORMAL", GAME_SPEED::NORMAL} ,
+        {"FAST", GAME_SPEED::FAST} ,
+        {"SLOWLY", GAME_SPEED::SLOWLY}
+    };
+    auto it = converter.find(type_str);
+    if (it != converter.end()) {
+        return it->second;
+    } else {
+        return GAME_SPEED::NORMAL;
+    }
+}
+
+std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> snake::settings::creatSnakeTilesetPos(const snake::ConfigReader &config, const std::string &name) {
+    std::vector<std::string> find_value = findValue(name, config);
+    std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> result;
+
+    for (std::string& value : find_value) {
+        std::string tmp = name;
+        tmp += ".";
+        tmp += value;
+        result[convertStringToTypeOfSnake(value)] = findVector2u(tmp, config);
+    }
+    return result;
+}
+
+std::vector<sf::Vector2u> snake::settings::creatPosOfTiles(const snake::ConfigReader &config, const std::string &name) {
+    std::vector<std::string> find_value = findValue(name, config);
+    std::vector<sf::Vector2u> result;
+    result.reserve(find_value.size());
+    for (std::string& value : find_value) {
+        std::string tmp = name;
+        tmp += ".";
+        tmp += value;
+        result.push_back(findVector2u(tmp, config));
+    }
+    return result;
+}
+
+snake::settings::GameSettings snake::settings::LoaderSettings(const snake::ConfigReader &config) {
+    // настройки экрана
+    sf::Vector2u WIDESCREEN = findVector2u("WINDOWS_WIDSCREEN", config);
+    std::string WINDOW_NAME = findString("WINDOWS_NAME", config);
+
+    // настройки змейки
+    std::string SNAKE_IMAGE_NAME = findString("SNAKE_TILESET_NAME", config);
+    sf::Vector2u SNAKE_TILES_SIZE = findVector2u("SNAKE_TILE_SIZE", config);
+    float SNAKE_SCALE = findFloat("SNAKE_SCALE", config);
+    auto SNAKE_POS_TILES(std::move(creatSnakeTilesetPos(config, "SNAKE_POS_TILES")));
+    sf::Vector2i SNAKE_START_POS = findVector2i("SNAKE_START_POSITION", config);
+    size_t SNAKE_START_SIZE = static_cast<size_t>(findInt("SNAKE_START_SIZE", config));
+
+    // настройки карты
+    std::string MAP_IMAGE_NAME = findString("MAP_TILESET_NAME", config);
+    sf::Vector2u MAP_TILE_SIZE = findVector2u("MAP_TILE_SIZE", config);
+    const sf::Vector2u MAP_SIZE = findVector2u("MAP_SIZE", config);
+    float MAP_SCALE = findFloat("MAP_SCALE", config);
+    std::vector<sf::Vector2u> MAP_POS_TILES = creatPosOfTiles(config, "MAP_POS_TILES");
+    size_t MAP_NUM_OF_TEXTURES = MAP_POS_TILES.size();
+
+    // настройки еды
+    std::string EAT_IMAGE_NAME = findString("EAT_IMAGE_NAME", config);
+    sf::Vector2u EAT_TILE_SIZE = findVector2u("EAT_TILE_SIZE", config);
+    float EAT_SCALE = findFloat("MAP_SCALE", config);
+    std::vector<sf::Vector2u> EAT_POS_TILES = creatPosOfTiles(config, "EAT_POS_TILES");
+    
+    // скорость игры
+    GAME_SPEED game_speed = convertStringToGameSpeed(findString("GAME_SPEED", config));
+    
     WindowSettings window_conf(WIDESCREEN, WINDOW_NAME);
 
-    TileSetSettings snake_tileset(SNAKE_IMAGE_NAME, TILES_SIZE, SCALE);
-    SnakeSettings snake_conf(snake_tileset, snake_pos_tiles, SNAKE_START_POS, SNAKE_START_SIZE);
+    TileSetSettings snake_tileset(SNAKE_IMAGE_NAME, SNAKE_TILES_SIZE, SNAKE_SCALE);
+    SnakeSettings snake_conf(snake_tileset, SNAKE_POS_TILES, SNAKE_START_POS, SNAKE_START_SIZE);
 
-    TileSetSettings map_tileset(MAP_IMAGE_NAME, TILES_SIZE, SCALE);
-    MapSettings map_conf(map_tileset, map_pos_tiles, MAP_SIZE, MAP_NUM_OF_TEXTURES);
+    TileSetSettings map_tileset(MAP_IMAGE_NAME, MAP_TILE_SIZE, MAP_SCALE);
+    MapSettings map_conf(map_tileset, MAP_POS_TILES, MAP_SIZE, MAP_NUM_OF_TEXTURES);
 
-    TileSetSettings eat_tileset(EAT_IMAGE_NAME, TILES_SIZE, SCALE);
-    EatSettings eat_conf(eat_tileset, eat_pos_to_tiles);
-
-    GAME_SPEED game_speed = GAME_SPEED::NORMAL;
+    TileSetSettings eat_tileset(EAT_IMAGE_NAME, EAT_TILE_SIZE, EAT_SCALE);
+    EatSettings eat_conf(eat_tileset, EAT_POS_TILES);
 
     return GameSettings(snake_conf, map_conf, window_conf, eat_conf, game_speed);
 }
-

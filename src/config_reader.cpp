@@ -176,10 +176,6 @@ snake::ConfigReader::~ConfigReader() {
     _file.close();
 }
 
-std::ifstream &snake::ConfigReader::getFile() {
-    return _file;
-}
-
 std::vector<snake::SettingsData>& snake::ConfigReader::getAllSettings() {
     return _settings;
 }
@@ -195,4 +191,51 @@ std::shared_ptr<snake::SettingsData> snake::ConfigReader::find(const std::string
         return SettingsData._name_var == value;
     });
     return (it == _settings.end() ? nullptr : std::make_shared<SettingsData>(*it));
+}
+
+constexpr float DEFAULT_FLOAT_VALUE = 0.5f;
+constexpr float DEFAULT_INT_VALUE = 0;
+
+sf::Vector2f snake::findVector2f(const std::string &name_of_setting, const ConfigReader &config) {
+    // ищем значение
+    std::vector<std::string> find_value = findValue(name_of_setting, config);
+    if (find_value.size() != 2) {
+        return {DEFAULT_FLOAT_VALUE, DEFAULT_FLOAT_VALUE};
+    }
+    return {std::stof(find_value[0]), std::stof(find_value[1])};
+}
+
+sf::Vector2i snake::findVector2i(const std::string &name_of_setting, const ConfigReader &config) {
+    // ищем значение
+    std::vector<std::string> find_value = findValue(name_of_setting, config);
+    if (find_value.size() != 2) {
+        return {};
+    }
+    return {std::stoi(find_value[0]), std::stoi(find_value[1])};
+}
+
+sf::Vector2u snake::findVector2u(const std::string &name_of_setting, const ConfigReader &config) {
+    sf::Vector2i int_value = findVector2i(name_of_setting, config);
+    return {static_cast<unsigned int>(int_value.x), static_cast<unsigned int>(int_value.y)};
+}
+
+float snake::findFloat(const std::string &name_of_setting, const ConfigReader &config) {
+    std::vector<std::string> find_value = findValue(name_of_setting, config);
+    if (find_value.size() != 1) {
+        return DEFAULT_FLOAT_VALUE;
+    }
+    return std::stof(find_value[0]);
+}
+
+int snake::findInt(const std::string &name_of_setting, const ConfigReader &config) {
+    std::vector<std::string> find_value = findValue(name_of_setting, config);
+    if (find_value.size() != 1) {
+        return DEFAULT_INT_VALUE;
+    }
+    return std::stoi(find_value[0]);
+}
+
+std::string snake::findString(const std::string &name_of_setting, const ConfigReader &config) {
+    std::vector<std::string> find_value = findValue(name_of_setting, config);
+    return find_value.front();
 }

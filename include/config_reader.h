@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <queue>
+#include <SFML/Graphics.hpp>
 
 // Правила для файла с настройками:
 // 1. после названия переменной должен быть знак '=', а за ним следовать его значение
@@ -17,7 +18,7 @@ namespace snake {
 struct SettingsData {
     SettingsData(std::string name);
     void addValue(std::shared_ptr<SettingsData> value);  // добавить значение переменной
-    std::string _name_var;                       // название переменной
+    std::string _name_var;                               // название переменной
     std::vector<std::shared_ptr<SettingsData>> _value;   // ссылки значения переменной
 };
 
@@ -26,20 +27,19 @@ size_t findStringValue(std::string_view& str, size_t start_pos = 0);      // н�
 size_t findValue(std::string_view& str, size_t start_pos = 0);            // находит в str значение переменной и возвращает позицию за ней не равную пробелу
 
 // Функции ParseName ... ParseArray модифицируют start_pos
-SettingsData ParseName(std::string_view str, size_t& start_pos);                  // выделяет имя переменной из строки
-SettingsData ParseStringValue(std::string_view str, size_t& start_pos);           // выделяет значение строковой переменной из строки
-SettingsData ParseValue(std::string_view str, size_t& start_pos);                 // выделяет значение переменной из строки
-void ParseArray(std::string_view str, size_t& start_pos, SettingsData& header);   // выделяет массив значений из строки
+SettingsData ParseName(std::string_view str, size_t& start_pos);                // выделяет имя переменной из строки
+SettingsData ParseStringValue(std::string_view str, size_t& start_pos);         // выделяет значение строковой переменной из строки
+SettingsData ParseValue(std::string_view str, size_t& start_pos);               // выделяет значение переменной из строки
+void ParseArray(std::string_view str, size_t& start_pos, SettingsData& header); // выделяет массив значений из строки
 
-std::string combineSettingsIntoOneLine(std::ifstream& file);              // объединить настройки из потока file в одну строку
-std::vector<SettingsData> ParseSetting(std::ifstream& file);                      // разбивает входной поток file на вектор настроек
+std::string combineSettingsIntoOneLine(std::ifstream& file); // объединить настройки из потока file в одну строку
+std::vector<SettingsData> ParseSetting(std::ifstream& file); // разбивает входной поток file на вектор настроек
 
 class ConfigReader {
 public:
     explicit ConfigReader(const std::string& file_name);
     ~ConfigReader();
-    std::ifstream& getFile();
-    std::vector<SettingsData>& getAllSettings();                                  // возвращает все настройки
+    std::vector<SettingsData>& getAllSettings(); // возвращает все настройки
     std::shared_ptr<SettingsData> find(const std::string& value, const std::shared_ptr<SettingsData> start_find = nullptr) const;
 private:
     std::ifstream _file;
@@ -47,8 +47,18 @@ private:
 };
 
 std::queue<std::string> spliteLinesIntoName(const std::string& line);     // разделяет поисковой запрос на очередь запросов
-std::vector<std::string> findValue(const std::string& name_of_setting, const ConfigReader& config); // функция для поиска нужной настройки (вернет empty если значение не найдено)
-                                                                        // синтаксис для поиска вложенного массива "NAME_ARR.NAME_NESTED_ARR"
+
+// функция для поиска нужной настройки (вернет empty если значение не найдено)
+// синтаксис для поиска вложенного массива "NAME_ARR.NAME_NESTED_ARR"
+std::vector<std::string> findValue(const std::string& name_of_setting, const ConfigReader& config); 
+
+// Вспомогательные функции, конвертирующие найденные настройки в нужный формат
+sf::Vector2f findVector2f(const std::string& name_of_setting, const ConfigReader& config);
+sf::Vector2i findVector2i(const std::string& name_of_setting, const ConfigReader& config);
+sf::Vector2u findVector2u(const std::string& name_of_setting, const ConfigReader& config);
+float findFloat(const std::string& name_of_setting, const ConfigReader& config);
+int findInt(const std::string& name_of_setting, const ConfigReader& config);
+std::string findString(const std::string& name_of_setting, const ConfigReader& config);
 
 } // конец namespace snake
 

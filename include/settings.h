@@ -9,6 +9,7 @@
 #include "map.h"
 #include "draw.h"
 #include "tile_set.h"
+#include "config_reader.h"
 
 namespace snake {
 namespace settings {
@@ -66,12 +67,20 @@ struct GameSettings {
     SnakeSettings _snake_conf;     // настройки змейки
     MapSettings _map_conf;         // настройки карты
     WindowSettings _window_conf;   // настройки окна
-    EatSettings _eat_conf;     // тайлсет еды
+    EatSettings _eat_conf;         // тайлсет еды
     GAME_SPEED _game_speed;        // скорость игры
 };
 
-// to do сделать удобный загрузчик настроек (например из файла)
-GameSettings LoaderSettings();
+// Вспомогательные функции:
+// конвертирует строку в TypeOfSnakeBodyTileset
+TypeOfSnakeBodyTileset convertStringToTypeOfSnake(const std::string& type_str);
+GAME_SPEED convertStringToGameSpeed(const std::string& type_str);
+// создает map для заполнения SNAKE_POS_TILES
+std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> creatSnakeTilesetPos(const snake::ConfigReader& config, const std::string& name);
+// создает вектор координат тайлов
+std::vector<sf::Vector2u> creatPosOfTiles(const snake::ConfigReader& config, const std::string& name);
+
+GameSettings LoaderSettings(const snake::ConfigReader& config);
 
 } // конец namespace settings
 } // конец namespace snake
