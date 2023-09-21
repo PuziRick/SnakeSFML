@@ -7,9 +7,32 @@ SNAKE_SCALE = 0.5
 SNAKE_START_POSITION = {4,4}
 SNAKE_START_SIZE = 3
 
+SNAKE_POS_TILES = {
+    HEAD_UP  =  {0,0}
+    , HEAD_DOWN = {2,0}
+    , HEAD_LEFT = {3,0}
+    , HEAD_RIGHT = {1,0}
+    , TAIL_UP = {0,1}
+    , TAIL_DOWN = {2,1}
+    , TAIL_LEFT = {3,1}
+    , TAIL_RIGHT = {1,1}
+    , HORIZONTAL_BODY = {1,3}
+    , VERTICAL_BODY = {0,3}
+    , RUSSIAN_G_LETTER_BODY = {1,2}
+    , INVERSE_RUSSIAN_G_LETTER_BODY = {2,2}
+    , L_BODY = {0,2}
+    , INVERSE_L_BODY = {3,2}
+}
+
 MAP_TILESET_NAME = "images/grass.png"
 MAP_TILE_SIZE = {64,64}
 MAP_SCALE = 0.5
+MAP_POS_TILES = {
+    FIRST = {0,0}
+    , SECOND ={1,0}
+    , THIRD= {2,0}
+}
+
 
 MAP_NUMBER_OF_TEXTURES = 3
 MAP_SIZE = {30,20}

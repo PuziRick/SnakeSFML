@@ -1,4 +1,5 @@
 #pragma once
+
 #include <fstream>
 #include "my_test_framework.h"
 #include "config_reader.h"
@@ -11,7 +12,7 @@ void TestValueReader() {
     ASSERT_HINT(_file.is_open(), "Couldn't open the test config file");
 
     // Парсим тестовый конфиг файл
-    std::vector<snake::Data> arr = snake::ParseSetting(_file);
+    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file);
 
     // Колхоз и мне очень стыдно
     const std::vector<std::pair<std::string, std::string>> CORRECT_ARR = {
@@ -30,9 +31,9 @@ void TestValueReader() {
     // пробегаем по полученным данным и сравниваем их с эталонами
     size_t pos_correct_arr = 0;
 
-    for (snake::Data& data : arr) {
-        ASSERT_EQUAL_HINT(data._name_var, CORRECT_ARR[pos_correct_arr].first, "Incorrect reading of the variable name");
-        for (std::shared_ptr<snake::Data> value : data._value) {
+    for (snake::SettingsData& SettingsData : arr) {
+        ASSERT_EQUAL_HINT(SettingsData._name_var, CORRECT_ARR[pos_correct_arr].first, "Incorrect reading of the variable name");
+        for (std::shared_ptr<snake::SettingsData> value : SettingsData._value) {
             ASSERT_EQUAL_HINT(value->_name_var, CORRECT_ARR[pos_correct_arr].second, "Incorrect reading of the variable value");
         }
         ++pos_correct_arr;
@@ -45,7 +46,7 @@ void TestStringReader() {
     std::ifstream _file("tested_configs/config_string.txt");
     ASSERT_HINT(_file.is_open(), "Сouldn't open the test config file");
     // Парсим тестовый конфиг файл
-    std::vector<snake::Data> arr = snake::ParseSetting(_file);
+    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file);
 
     const std::vector<std::pair<std::string, std::string>> CORRECT_ARR = {
         {"NORMAL_FORMAT", "string 1"} ,
@@ -66,9 +67,9 @@ void TestStringReader() {
     // пробегаем по полученным данным и сравниваем их с эталонами
     size_t pos_correct_arr = 0;
 
-    for (snake::Data& data : arr) {
-        ASSERT_EQUAL_HINT(data._name_var, CORRECT_ARR[pos_correct_arr].first, "Incorrect reading of the variable name");
-        for (std::shared_ptr<snake::Data> value : data._value) {
+    for (snake::SettingsData& SettingsData : arr) {
+        ASSERT_EQUAL_HINT(SettingsData._name_var, CORRECT_ARR[pos_correct_arr].first, "Incorrect reading of the variable name");
+        for (std::shared_ptr<snake::SettingsData> value : SettingsData._value) {
             ASSERT_EQUAL_HINT(value->_name_var, CORRECT_ARR[pos_correct_arr].second, "Incorrect reading of the variable value");
         }
         ++pos_correct_arr;
@@ -77,11 +78,11 @@ void TestStringReader() {
     _file.close();
 }
 
-void TestCombinedData() {
+void TestCombinedSettingsData() {
     std::ifstream _file("tested_configs/config_combine.txt");
     ASSERT_HINT(_file.is_open(), "Сouldn't open the test config file");
     // Парсим тестовый конфиг файл
-    std::vector<snake::Data> arr = snake::ParseSetting(_file);
+    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file);
     
     const std::vector<std::pair<std::string, std::string>> CORRECT_ARR = {
         {"NORMAL_FORMAT", "1"} ,
@@ -113,9 +114,9 @@ void TestCombinedData() {
     // пробегаем по полученным данным и сравниваем их с эталонами
     size_t pos_correct_arr = 0;
 
-    for (snake::Data& data : arr) {
-        ASSERT_EQUAL_HINT(data._name_var, CORRECT_ARR[pos_correct_arr].first, "Incorrect reading of the variable name");
-        for (std::shared_ptr<snake::Data> value : data._value) {
+    for (snake::SettingsData& SettingsData : arr) {
+        ASSERT_EQUAL_HINT(SettingsData._name_var, CORRECT_ARR[pos_correct_arr].first, "Incorrect reading of the variable name");
+        for (std::shared_ptr<snake::SettingsData> value : SettingsData._value) {
             ASSERT_EQUAL_HINT(value->_name_var, CORRECT_ARR[pos_correct_arr].second, "Incorrect reading of the variable value");
         }
         ++pos_correct_arr;
@@ -124,7 +125,7 @@ void TestCombinedData() {
     _file.close();
 }
 
-struct Array_Data {
+struct Array_SettingsData {
     std::string name;
     std::pair<std::string, std::string> value;
 };
@@ -133,9 +134,9 @@ void Test1DArray() {
     std::ifstream _file("tested_configs/config_array.txt");
     ASSERT_HINT(_file.is_open(), "Сouldn't open the test config file");
     // Парсим тестовый конфиг файл
-    std::vector<snake::Data> arr = snake::ParseSetting(_file);
+    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file);
 
-    std::vector<Array_Data> CORRECT_ARR = {
+    std::vector<Array_SettingsData> CORRECT_ARR = {
         {"NORMAL_FORMAT_1", {"1","2"}} ,
         {"NORMAL_FORMAT_2", {"1","2"}} ,
         {"EXTRA_SPACE_IN_THE_BEGINNING_OF_THE_LINE", {"3","4"}} ,
@@ -152,10 +153,10 @@ void Test1DArray() {
     // пробегаем по полученным данным и сравниваем их с эталонами
     size_t pos_correct_arr = 0;
 
-    for (snake::Data& data : arr) {
-        ASSERT_EQUAL_HINT(data._name_var, CORRECT_ARR[pos_correct_arr].name, "Incorrect reading of the variable name");
+    for (snake::SettingsData& SettingsData : arr) {
+        ASSERT_EQUAL_HINT(SettingsData._name_var, CORRECT_ARR[pos_correct_arr].name, "Incorrect reading of the variable name");
         bool is_first = true; // mvp проверка 
-        for (std::shared_ptr<snake::Data> value : data._value) {
+        for (std::shared_ptr<snake::SettingsData> value : SettingsData._value) {
             if (is_first) {
                 ASSERT_EQUAL_HINT(value->_name_var, CORRECT_ARR[pos_correct_arr].value.first, "Incorrect reading of the variable value");
                 is_first = false;
@@ -173,8 +174,8 @@ void Test2DArray() {
     std::ifstream _file("tested_configs/config_array_2d.txt");
     ASSERT_HINT(_file.is_open(), "Сouldn't open the test config file");
     // Парсим тестовый конфиг файл
-    std::vector<snake::Data> arr = snake::ParseSetting(_file);
-    std::pair<std::string, std::vector<Array_Data>> CORRECT_ARR = {
+    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file);
+    std::pair<std::string, std::vector<Array_SettingsData>> CORRECT_ARR = {
         "SNAKE_POS_TILES", {
             {"HEAD_UP",  {"0","0"}} , 
             {"HEAD_DOWN", {"2","0"}} , 
@@ -196,12 +197,12 @@ void Test2DArray() {
     // пробегаем по полученным данным и сравниваем их с эталонами
     size_t pos_correct_arr = 0;
 
-    for (snake::Data& data : arr) {
-        ASSERT_EQUAL_HINT(data._name_var, CORRECT_ARR.first, "Incorrect reading of the variable name");
-        for (std::shared_ptr<snake::Data> value_name : data._value) {
+    for (snake::SettingsData& SettingsData : arr) {
+        ASSERT_EQUAL_HINT(SettingsData._name_var, CORRECT_ARR.first, "Incorrect reading of the variable name");
+        for (std::shared_ptr<snake::SettingsData> value_name : SettingsData._value) {
             ASSERT_EQUAL_HINT(value_name->_name_var, CORRECT_ARR.second[pos_correct_arr].name, "Incorrect reading of the variable value (name)");
             bool is_first = true; // mvp проверка 
-            for (std::shared_ptr<snake::Data> value : value_name->_value) {
+            for (std::shared_ptr<snake::SettingsData> value : value_name->_value) {
                 if (is_first) {
                     ASSERT_EQUAL_HINT(value->_name_var, CORRECT_ARR.second[pos_correct_arr].value.first, "Incorrect reading of the variable value");
                     is_first = false;
@@ -217,18 +218,6 @@ void Test2DArray() {
 void TestConfigFind() {
     std::string file_name = "tested_configs/config_norm.txt";
     snake::ConfigReader config_reader(file_name);
-    /*
-    auto settings = config_reader.getAllSettings();
-    for (snake::Data& data : settings) {
-        std::cout << "name: " << data._name_var << std::endl;
-        for (std::shared_ptr<snake::Data> data_value : data._value) {
-            std::cout << " value: " << data_value->_name_var << std::endl;
-            for (std::shared_ptr<snake::Data> value : data_value->_value) {
-                std::cout << "  * v: " << value->_name_var << std::endl;
-            }
-        }
-    }
-    */
     // все возможные запросы и ожидаемые ответы
     const std::map<std::string, std::vector<std::string>> REQUESTS_ANSWER = {
         {"WINDOWS_WIDSCREEN" , {"960", "640"}} ,
@@ -236,23 +225,39 @@ void TestConfigFind() {
         {"SNAKE_TILESET_NAME" , {"images/snake.png"}} ,
         {"SNAKE_TILE_SIZE" , {"64", "64"}} ,
         {"SNAKE_SCALE" , {"0.5"}} ,
-        {"HEAD_UP" , {"0","0"}} ,
-        {"HEAD_DOWN" , {"2","0"}} ,
-        {"HEAD_LEFT" , {"3","0"}} ,
-        {"HEAD_RIGHT" , {"1","0"}} ,
-        {"TAIL_UP" , {"0","1"}} ,
-        {"TAIL_DOWN" , {"2","1"}} ,
-        {"TAIL_LEFT" , {"3","1"}} ,
-        {"TAIL_RIGHT" , {"1","1"}} ,
-        {"HORIZONTAL_BODY" , {"1","3"}} ,
-        {"VERTICAL_BODY" , {"0","3"}} ,
-        {"RUSSIAN_G_LETTER_BODY" , {"1","2"}} ,
-        {"INVERSE_RUSSIAN_G_LETTER_BODY" , {"2","2"}} ,
-        {"L_BODY" , {"0","2"}} ,
-        {"INVERSE_L_BODY" , {"3","2"}} ,
         {"SNAKE_START_POSITION" , {"4","4"}} ,
         {"SNAKE_START_SIZE" , {"3"}} ,
-        {"MAP_TILESET_NAME" , {"imgase/grass.png"}} ,
+        {"SNAKE_POS_TILES", {
+            "HEAD_UP" ,
+            "HEAD_DOWN" ,
+            "HEAD_LEFT" ,
+            "HEAD_RIGHT" ,
+            "TAIL_UP" ,
+            "TAIL_DOWN" ,
+            "TAIL_LEFT" ,
+            "TAIL_RIGHT" ,
+            "HORIZONTAL_BODY" ,
+            "VERTICAL_BODY" ,
+            "RUSSIAN_G_LETTER_BODY" ,
+            "INVERSE_RUSSIAN_G_LETTER_BODY" ,
+            "L_BODY" ,
+            "INVERSE_L_BODY"}
+        } ,
+        {"SNAKE_POS_TILES.HEAD_UP",  {"0","0"}} ,
+        {"SNAKE_POS_TILES.HEAD_DOWN", {"2","0"}} ,
+        {"SNAKE_POS_TILES.HEAD_LEFT", {"3","0"}} ,
+        {"SNAKE_POS_TILES.HEAD_RIGHT", {"1","0"}} ,
+        {"SNAKE_POS_TILES.TAIL_UP", {"0","1"}} ,
+        {"SNAKE_POS_TILES.TAIL_DOWN", {"2","1"}} ,
+        {"SNAKE_POS_TILES.TAIL_LEFT", {"3","1"}} ,
+        {"SNAKE_POS_TILES.TAIL_RIGHT", {"1","1"}} ,
+        {"SNAKE_POS_TILES.HORIZONTAL_BODY", {"1","3"}} ,
+        {"SNAKE_POS_TILES.VERTICAL_BODY", {"0","3"}} ,
+        {"SNAKE_POS_TILES.RUSSIAN_G_LETTER_BODY", {"1","2"}} ,
+        {"SNAKE_POS_TILES.INVERSE_RUSSIAN_G_LETTER_BODY", {"2","2"}} ,
+        {"SNAKE_POS_TILES.L_BODY", {"0","2"}} ,
+        {"SNAKE_POS_TILES.INVERSE_L_BODY", {"3","2"}} ,
+        {"MAP_TILESET_NAME" , {"images/grass.png"}} ,
         {"MAP_TILE_SIZE" , {"64","64"}} ,
         {"MAP_SCALE" , {"0.5"}} ,
         {"MAP_NUMBER_OF_TEXTURES" , {"3"}} ,
@@ -263,13 +268,16 @@ void TestConfigFind() {
     };
 
     for (const auto& [name, value] : REQUESTS_ANSWER) {
-        std::vector<std::shared_ptr<snake::Data>>& answer = config_reader.findSetting(name);
-        size_t pos_value = 0;
-        for (std::shared_ptr<snake::Data> data : answer) {
-            ASSERT_EQUAL_HINT(data->_name_var, value[pos_value], "Incorrect value found");
-            ++pos_value;
+        std::vector<std::string> answer = snake::findValue(name, config_reader);
+        ASSERT_EQUAL_HINT(answer.size(), value.size(), "Incorrect size of found values");
+        for (size_t i = 0; i < answer.size(); ++i) {
+            ASSERT_EQUAL_HINT(answer[i], value[i], "Incorrect value found");
         }
     }
+
+    const std::string REQUEST_TO_WHICH_THERE_IS_NO_RESPONSE = "WHAT_IS_THE_MEANING_OF_LIFE";
+    std::vector<std::string> answer = snake::findValue(REQUEST_TO_WHICH_THERE_IS_NO_RESPONSE, config_reader);
+    ASSERT_HINT(answer.empty(), "Incorrect found empty value");
 }
 
 // to do добавить проверку на большом файле настроек
@@ -279,6 +287,6 @@ void TestConfigReader() {
     RUN_TEST_TAB(TestStringReader, 1); // проверяем чтение строковых переменных
     RUN_TEST_TAB(Test1DArray, 1);      // проверяем простой одномерный массив
     RUN_TEST_TAB(Test2DArray, 1);      // проверяем чтение двумерного массива
-    RUN_TEST_TAB(TestCombinedData, 1); // проверяем чтение всех видов переменных
+    RUN_TEST_TAB(TestCombinedSettingsData, 1); // проверяем чтение всех видов переменных
     RUN_TEST_TAB(TestConfigFind, 1);   // проверяем поиск значения настройки
 }
