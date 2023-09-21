@@ -2,9 +2,11 @@
 
 #include "settings.h"
 #include "engine.h"
+#include "config_reader.h"
+
 
 int main() {
-    auto settings = snake::settings::LoaderSettings();
-    snake::Engine engine(settings);
-    engine.start();
+    snake::ConfigReader config("config.txt");
+    snake::Engine snake(snake::settings::LoaderSettings(config));
+    snake.start();
 }
