@@ -24,14 +24,27 @@ SNAKE_START_POSITION = {4,4}
 SNAKE_START_SIZE = 3
 
 MAP_TILESET_NAME = "images/grass.png"
-MAP_TILE_SIZE = {64,64}
-MAP_SCALE = 0.5
+MAP_TILE_SIZE = {50,50}
+MAP_SCALE = 0.64
 MAP_POS_TILES = {
     TILES_0 = {0,0} ,
     TILES_1 = {1,0} ,
-    TILES_2 = {2,0}
+    TILES_2 = {2,0} ,
+    TILES_3 = {3,0} ,
+    TILES_4 = {0,1} ,
+    TILES_5 = {1,1} ,
+    TILES_6 = {2,1} ,
+    TILES_7 = {3,1} ,
+    TILES_8 = {0,2} ,
+    TILES_9 = {1,2} ,
+    TILES_10 = {2,2} ,
+    TILES_11 = {3,2} ,
+    TILES_12 = {0,3} ,
+    TILES_13 = {1,3} ,
+    TILES_14 = {2,3} ,
+    TILES_15 = {3,3}
 }
-MAP_NUMBER_OF_TEXTURES = 3
+MAP_NUMBER_OF_TEXTURES = 16
 MAP_SIZE = {30,20}
 
 EAT_IMAGE_NAME = "images/apple.png"

@@ -55,7 +55,7 @@ file(GLOB SOURCE "${PROJECT_SOURCE_DIR}/src/*.cpp")
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
 # Указываем путь к собранной и установленной SFML
-set(SFML_DIR "D:/SFML")
+set(SFML_DIR "D:/CPP/lib/SFML")
 
 # Добавляем путь к SFML в список префиксов
 list(APPEND CMAKE_PREFIX_PATH "${SFML_DIR}")
@@ -96,7 +96,17 @@ endif()
 # ===================================================================
 #                         Копируем спрайты
 # ===================================================================
-file(COPY ${PROJECT_SOURCE_DIR}/images/snake.png DESTINATION ${CMAKE_BINARY_DIR}/images)
-file(COPY ${PROJECT_SOURCE_DIR}/images/grass.png DESTINATION ${CMAKE_BINARY_DIR}/images)
-file(COPY ${PROJECT_SOURCE_DIR}/images/apple.png DESTINATION ${CMAKE_BINARY_DIR}/images)
+
+add_custom_target(copy ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/images ${CMAKE_BINARY_DIR}/images)
+
+file(GLOB_RECURSE fonts_files "fonts/*.*")
+foreach(font_file ${fonts_files})
+    file(COPY "${font_file}" DESTINATION "fonts")
+endforeach()
+
+file(GLOB_RECURSE images_files "images/*.*")
+foreach(images_files ${images_files})
+    file(COPY "${images_files}" DESTINATION "images")
+endforeach()
+
 file(COPY ${PROJECT_SOURCE_DIR}/config.txt DESTINATION ${CMAKE_BINARY_DIR})

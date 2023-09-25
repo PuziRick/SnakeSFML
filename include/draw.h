@@ -8,6 +8,7 @@
 #include "snake.h"
 #include "map.h"
 #include "eat.h"
+#include "button.h"
 
 namespace snake {
 
@@ -72,6 +73,15 @@ public:
 private:
     snake::Eat& _eat_ref;                    // ссылка на объект "еда"
     std::vector<sf::Vector2u> _pos_to_tiles; // перечисление позиций с текстурами
+};
+
+class DrawButton : public Drawable {
+public:
+    DrawButton(sf::RenderWindow& window, snake::TileSet& tile_set, const snake::Button& button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles);
+    void Draw() override;
+private:
+    const snake::Button& _button_ref;
+    std::map<snake::BUTTON_STATES, sf::Vector2u> _pos_to_tiles;
 };
 
 } // конец namespace snake

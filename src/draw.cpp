@@ -173,3 +173,15 @@ void snake::DrawEat::Draw() {
     setSpritePositionAndScale(_sprite, _eat_ref._coordinate, getTileSetRef().getTileSize(), getTileSetRef().getScale());
     getWindowRef().draw(_sprite);
 }
+
+snake::DrawButton::DrawButton(sf::RenderWindow &window, snake::TileSet &tile_set, const snake::Button &button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles)
+    : Drawable(window, tile_set)
+    , _button_ref(button)
+    , _pos_to_tiles(pos_to_tiles) {
+}
+
+void snake::DrawButton::Draw() {
+    auto _sprite = getTileSetRef().getSprite(_pos_to_tiles[_button_ref.getState()]);
+    _sprite.setPosition(static_cast<float>(_button_ref.getPosition().x) / getTileSetRef().getScale().x, static_cast<float>(_button_ref.getPosition().y));
+    getWindowRef().draw(_sprite);
+}

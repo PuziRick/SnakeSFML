@@ -132,7 +132,7 @@ snake::settings::GameSettings snake::settings::LoaderSettings(const snake::Confi
     // настройки еды
     std::string EAT_IMAGE_NAME = findString("EAT_IMAGE_NAME", config);
     sf::Vector2u EAT_TILE_SIZE = findVector2u("EAT_TILE_SIZE", config);
-    float EAT_SCALE = findFloat("MAP_SCALE", config);
+    float EAT_SCALE = findFloat("EAT_SCALE", config);
     std::vector<sf::Vector2u> EAT_POS_TILES = creatPosOfTiles(config, "EAT_POS_TILES");
     
     // скорость игры
