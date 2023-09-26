@@ -83,11 +83,11 @@ public:
     void CenterButtomX(); // центрирует кнопку по координате x
     void CenterButtomY(); // центрирует кнопку по координате y
 private:
-    Button& _button_ref;
-    std::map<BUTTON_STATES, sf::Vector2u> _pos_to_tiles;
+    Button& _button_ref;                                     // ссылка на кнопку
+    std::map<BUTTON_STATES, sf::Vector2u> _pos_to_tiles;     // перечисление позиций с текстурами
 
-    static sf::Vector2f center(sf::Vector2u size_big, sf::Vector2u size_small, sf::Vector2f scale, sf::Vector2f coord_big = {0,0});
-
+    static sf::Vector2f calcCenterCoord(sf::Vector2u size_rect, sf::Vector2f pos_lef_up);  // находит координату центра прямоугольника
+    static sf::Vector2f calcLeftUpCoord(sf::Vector2u size_rect, sf::Vector2f pos_center);  // находит координату верхнего левого угла
     void resizeText();   // изменяет разме текста
     void centerText();   // центрирует текст в кнопке
 };

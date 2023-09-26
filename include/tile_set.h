@@ -16,6 +16,7 @@ public:
     sf::Sprite& getSprite(sf::Vector2u possition);                                      // возвращает pos спрайт из загруженного тайлсета
     sf::Vector2u getTileSize() const;                                                   // возвращает размер спрайта до скелинга
     sf::Vector2f getScale() const;                                                      // возвращает масштаб
+    sf::Vector2u getScaledSize() const;                                                 // возвращает размер спрайта после скелинга
 };
 
 } // конец namespace snake

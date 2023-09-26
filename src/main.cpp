@@ -24,7 +24,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(WIDESCREEN.x, WIDESCREEN.y), "test_button");
 
     const sf::Vector2u TILES_SIZE(645, 140);
-    float SCALE = 0.5f;
+    float SCALE = 1.0f;
 
     std::map<snake::BUTTON_STATES, sf::Vector2u> pos_to_tiles = {
         {snake::BUTTON_STATES::NORMAL, {0,0}} ,
@@ -32,11 +32,11 @@ int main() {
         {snake::BUTTON_STATES::FOCUS, {0,2}}
     };
 
-    snake::Button button(L"старт");
+    snake::Button button(L"cтарт");
     snake::TileSet tiles("images/button.png", TILES_SIZE, SCALE);
 
     snake::DrawButton drawButton(window, tiles, button, pos_to_tiles);
-    drawButton.CenterButtom();
+    //drawButton.CenterButtom();
     bool is_pressed = false;
 
     while (window.isOpen()) {

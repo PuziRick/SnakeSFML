@@ -37,3 +37,8 @@ sf::Vector2u snake::TileSet::getTileSize() const {
 sf::Vector2f snake::TileSet::getScale() const {
     return _scale;
 }
+
+sf::Vector2u snake::TileSet::getScaledSize() const {
+    sf::Vector2u scaled_size(static_cast<unsigned int>(static_cast<float>(_tile_size.x) * _scale.x) , static_cast<unsigned int>(static_cast<float>(_tile_size.y) * _scale.y));
+    return scaled_size;
+}

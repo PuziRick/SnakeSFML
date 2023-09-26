@@ -174,9 +174,6 @@ void snake::DrawEat::Draw() {
     getWindowRef().draw(_sprite);
 }
 
-
-#include <iostream>
-
 snake::DrawButton::DrawButton(sf::RenderWindow &window, snake::TileSet &tile_set, snake::Button &button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles)
     : Drawable(window, tile_set)
     , _button_ref(button)
@@ -193,14 +190,12 @@ void snake::DrawButton::Draw() {
 }
 
 void snake::DrawButton::CenterButtom() {
-    sf::Vector2u window_size = getWindowRef().getSize();
-    sf::Vector2u bottum_size = getTileSetRef().getTileSize();
-    sf::Vector2f scale = getTileSetRef().getScale();
-    sf::Vector2f pos = center(window_size, bottum_size, scale);
+    sf::Vector2f center_window = calcCenterCoord(getWindowRef().getSize(), {0,0});
+    sf::Vector2u button_size = getTileSetRef().getScaledSize();
+    sf::Vector2f pos = calcLeftUpCoord(button_size, center_window);
+
     _button_ref.setPosition(pos);
     centerText();
-    //CenterButtomX();
-    //CenterButtomY();
 }
 
 void snake::DrawButton::CenterButtomX() {
@@ -217,35 +212,36 @@ void snake::DrawButton::CenterButtomY() {
     centerText();
 }
 
-constexpr float delta = 0.26f;
-
-
-sf::Vector2f snake::DrawButton::center(sf::Vector2u size_big, sf::Vector2u size_small, sf::Vector2f scale, sf::Vector2f coord_big) {
-    float delta_x = (static_cast<float>(size_big.x) - static_cast<float>(size_small.x) * scale.x) / 2;
-    float delta_y = (static_cast<float>(size_big.y) - static_cast<float>(size_small.y) * scale.y) / 2;
-
-    std::cout << "===========================" << std::endl;
-    std::cout << "WxH b = [" << size_big.x << "," << size_big.y << "]" << std::endl;
-    std::cout << "WxH s = [" << size_small.x << "," << size_small.y << "]" << std::endl;
-    std::cout << "Scale = [" << scale.x << "," << scale.y << "]" << std::endl;
-    std::cout << "Big   = [" << coord_big.x << "," << coord_big.y << "]" << std::endl;
-    std::cout << "Small = [" << coord_big.x + delta_x << "," << coord_big.y + delta_y << "]" << std::endl;
-    std::cout << "===========================" << std::endl;
-
-    return {coord_big.x + delta_x, coord_big.y + delta_y};
+sf::Vector2f snake::DrawButton::calcCenterCoord(sf::Vector2u size_rect, sf::Vector2f pos_lef_up) {
+    sf::Vector2f center = pos_lef_up;
+    center.x += static_cast<float>(size_rect.x) / 2;
+    center.y += static_cast<float>(size_rect.y) / 2;
+    return center;
 }
+
+sf::Vector2f snake::DrawButton::calcLeftUpCoord(sf::Vector2u size_rect, sf::Vector2f pos_center) {
+    sf::Vector2f pos_left_up = pos_center;
+    pos_left_up.x -= static_cast<float>(size_rect.x) / 2;
+    pos_left_up.y -= static_cast<float>(size_rect.y) / 2;
+    return pos_left_up;
+}
+
+// отступ от грани кнопки
+constexpr float OFFSET_SIDE = 0.25f;
 
 void snake::DrawButton::resizeText() {
     float height_button = static_cast<float>(getTileSetRef().getTileSize().y) * getTileSetRef().getScale().y;
-    unsigned int height = static_cast<unsigned int>( height_button - 2 * delta * height_button);
+    unsigned int height = static_cast<unsigned int>( height_button - 2 * OFFSET_SIDE * height_button );
     _button_ref.getText().setCharacterSize(height);
 }
 
 void snake::DrawButton::centerText() {
-    unsigned int size_char = static_cast<unsigned int>(_button_ref.getText().getCharacterSize());
-    sf::Vector2u size_text(static_cast<unsigned int>(size_char) * static_cast<unsigned int>(_button_ref.getText().getString().getSize()), size_char);
-    sf::Vector2f scale = getTileSetRef().getScale();
-    sf::Vector2f pos = center(getTileSetRef().getTileSize(), size_text, scale, _button_ref.getPosition());
+    sf::Vector2f center_button = calcCenterCoord(getTileSetRef().getScaledSize(), _button_ref.getPosition());
+    unsigned int char_size = _button_ref.getText().getCharacterSize();
+    center_button.y -= OFFSET_SIDE * static_cast<float>(char_size);  // поправка на deltu из-за именения размера текста
+    center_button.x += OFFSET_SIDE * static_cast<float>(char_size);  // поправка на deltu из-за именения размера текста
 
+    sf::Vector2u text_size( static_cast<unsigned int>(_button_ref.getText().getString().getSize()) * char_size, char_size);
+    sf::Vector2f pos = calcLeftUpCoord(text_size, center_button);
     _button_ref.getText().setPosition(pos);
 }
