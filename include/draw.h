@@ -77,11 +77,19 @@ private:
 
 class DrawButton : public Drawable {
 public:
-    DrawButton(sf::RenderWindow& window, snake::TileSet& tile_set, const snake::Button& button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles);
+    DrawButton(sf::RenderWindow& window, snake::TileSet& tile_set, snake::Button& button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles);
     void Draw() override;
+    void CenterButtom();  // центрирует кнопку по координатам {x,y}
+    void CenterButtomX(); // центрирует кнопку по координате x
+    void CenterButtomY(); // центрирует кнопку по координате y
 private:
-    const snake::Button& _button_ref;
-    std::map<snake::BUTTON_STATES, sf::Vector2u> _pos_to_tiles;
+    Button& _button_ref;
+    std::map<BUTTON_STATES, sf::Vector2u> _pos_to_tiles;
+
+    static sf::Vector2f center(sf::Vector2u size_big, sf::Vector2u size_small, sf::Vector2f scale, sf::Vector2f coord_big = {0,0});
+
+    void resizeText();   // изменяет разме текста
+    void centerText();   // центрирует текст в кнопке
 };
 
 } // конец namespace snake

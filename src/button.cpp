@@ -1,12 +1,16 @@
 #include "button.h"
 
-snake::Button::Button(const std::string &text, const sf::Vector2i& pos, BUTTON_STATES state)
-    : _text(text)
-    , _state(state)
+snake::Button::Button(const std::wstring &text, const sf::Vector2f& pos, BUTTON_STATES state, const std::string& font_name)
+    : _state(state)
     , _position(pos) {
+    _font.loadFromFile(font_name);
+    _text.setFont(_font);
+    _text.setFillColor(sf::Color::White);
+    _text.setString(sf::String(text));
+    _text.setStyle(sf::Text::Regular);
 }
 
-std::string snake::Button::getText() const {
+sf::Text& snake::Button::getText() {
     return _text;
 }
 
@@ -18,10 +22,10 @@ void snake::Button::setState(BUTTON_STATES state) {
     _state = state;
 }
 
-sf::Vector2i snake::Button::getPosition() const {
+sf::Vector2f snake::Button::getPosition() const {
     return _position;
 }
 
-void snake::Button::setPosition(sf::Vector2i pos) {
+void snake::Button::setPosition(sf::Vector2f pos) {
     _position = pos;
 }

@@ -17,13 +17,14 @@ int main() {
 #include "draw.h"
 #include <map>
 #include <iostream>
+#include <string>
 
 int main() {
     const sf::Vector2u WIDESCREEN(960, 640);
     sf::RenderWindow window(sf::VideoMode(WIDESCREEN.x, WIDESCREEN.y), "test_button");
 
-    const sf::Vector2u TILES_SIZE(710, 140);
-    const float SCALE = 0.25f;
+    const sf::Vector2u TILES_SIZE(645, 140);
+    float SCALE = 0.5f;
 
     std::map<snake::BUTTON_STATES, sf::Vector2u> pos_to_tiles = {
         {snake::BUTTON_STATES::NORMAL, {0,0}} ,
@@ -31,14 +32,11 @@ int main() {
         {snake::BUTTON_STATES::FOCUS, {0,2}}
     };
 
-    sf::Vector2i pos(static_cast<int>(WIDESCREEN.x - TILES_SIZE.x) / 2, static_cast<int>(WIDESCREEN.y - TILES_SIZE.y) / 3);
-    std::cout << "[" << pos.x << "," << pos.y << "]" << std::endl;
-
-    snake::Button button("Старт", pos);
+    snake::Button button(L"старт");
     snake::TileSet tiles("images/button.png", TILES_SIZE, SCALE);
 
-    snake::DrawButton drawa(window, tiles, button, pos_to_tiles);
-
+    snake::DrawButton drawButton(window, tiles, button, pos_to_tiles);
+    drawButton.CenterButtom();
     bool is_pressed = false;
 
     while (window.isOpen()) {
@@ -57,7 +55,7 @@ int main() {
             }
         }
         window.clear();
-        drawa.Draw();
+        drawButton.Draw();
         window.display();
     }
 }
