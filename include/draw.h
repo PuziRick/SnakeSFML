@@ -80,16 +80,15 @@ public:
     DrawButton(sf::RenderWindow& window, snake::TileSet& tile_set, snake::Button& button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles);
     void Draw() override;
     void CenterButtom();  // центрирует кнопку по координатам {x,y}
-    void CenterButtomX(); // центрирует кнопку по координате x
-    void CenterButtomY(); // центрирует кнопку по координате y
+    void placeButtonVertically(int pos_on_vertical = 1, int max_num = 5); // размещает кнопку по вертикали
 private:
     Button& _button_ref;                                     // ссылка на кнопку
     std::map<BUTTON_STATES, sf::Vector2u> _pos_to_tiles;     // перечисление позиций с текстурами
 
     static sf::Vector2f calcCenterCoord(sf::Vector2u size_rect, sf::Vector2f pos_lef_up);  // находит координату центра прямоугольника
     static sf::Vector2f calcLeftUpCoord(sf::Vector2u size_rect, sf::Vector2f pos_center);  // находит координату верхнего левого угла
-    void resizeText();   // изменяет разме текста
-    void centerText();   // центрирует текст в кнопке
+    void resizeText();      // изменяет разме текста
+    void centerText();      // центрирует текст в кнопке
+    void changeTextColor(); // изменяет цвет текста
 };
-
 } // конец namespace snake

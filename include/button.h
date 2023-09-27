@@ -20,6 +20,7 @@ public:
     void setState(BUTTON_STATES state);  // сеттер состояния кнопки
     sf::Vector2f getPosition() const;    // геттер положения кнопки
     void setPosition(sf::Vector2f pos);  // сеттер положения кнопки
+    void setTextColor(sf::Color color = sf::Color::White);  // сеттер цвета текста
 private:
     sf::Text _text;
     sf::Font _font;

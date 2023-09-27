@@ -80,6 +80,8 @@ std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> creatSnakeTilesetPos(const
 // создает вектор координат тайлов
 std::vector<sf::Vector2u> creatPosOfTiles(const snake::ConfigReader& config, const std::string& name);
 
+WindowSettings loadWindowSettings(const snake::ConfigReader& config);
+
 GameSettings LoaderSettings(const snake::ConfigReader& config);
 
 } // конец namespace settings

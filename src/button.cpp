@@ -29,3 +29,7 @@ sf::Vector2f snake::Button::getPosition() const {
 void snake::Button::setPosition(sf::Vector2f pos) {
     _position = pos;
 }
+
+void snake::Button::setTextColor(sf::Color color) {
+    _text.setFillColor(color);
+}

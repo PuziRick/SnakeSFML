@@ -108,6 +108,13 @@ std::vector<sf::Vector2u> snake::settings::creatPosOfTiles(const snake::ConfigRe
     return result;
 }
 
+snake::settings::WindowSettings snake::settings::loadWindowSettings(const snake::ConfigReader &config) {
+    sf::Vector2u WIDESCREEN = findVector2u("WINDOWS_WIDSCREEN", config);
+    std::string WINDOW_NAME = findString("WINDOWS_NAME", config);
+    WindowSettings window_conf(WIDESCREEN, WINDOW_NAME);
+    return window_conf;
+}
+
 snake::settings::GameSettings snake::settings::LoaderSettings(const snake::ConfigReader &config) {
     // настройки экрана
     sf::Vector2u WIDESCREEN = findVector2u("WINDOWS_WIDSCREEN", config);
