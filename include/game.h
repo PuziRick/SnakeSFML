@@ -1,10 +1,14 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "engine.h"
+#include "menu.h"
 #include "config_reader.h"
 
 namespace snake {
+
+enum class GAME_STATE {
+    MENU, GAME, SETTING
+};
 
 // Основной класс игры, работает по принципу RAII
 class Game {

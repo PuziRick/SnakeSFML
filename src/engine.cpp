@@ -1,5 +1,5 @@
 #include "engine.h"
-
+/*
 snake::RandomGen::RandomGen(sf::Vector2u map_size) 
     : gen(rd())
     , dist_x(0, static_cast<unsigned int>(map_size.x - 1))
@@ -154,3 +154,4 @@ bool snake::Engine::eating() {
     }
     return true;
 }
+*/

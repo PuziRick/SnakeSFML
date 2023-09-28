@@ -21,6 +21,7 @@ option(BUILD_LIBS "Включить сборку библиотек" OFF)
 # отдельное спасибо https://habr.com/ru/articles/461817/
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     add_compile_options(
+        -g
         -Werror
 
         -Wall
@@ -46,6 +47,7 @@ if(NOT CMAKE_CXX_EXTENSIONS)
     set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
+
 # ===================================================================
 #                Компиляция исполняемого файла игры
 # ===================================================================
@@ -55,7 +57,7 @@ file(GLOB SOURCE "${PROJECT_SOURCE_DIR}/src/*.cpp")
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
 # Указываем путь к собранной и установленной SFML
-set(SFML_DIR "D:/SFML")
+set(SFML_DIR "D:/CPP/lib/SFML")
 
 # Добавляем путь к SFML в список префиксов
 list(APPEND CMAKE_PREFIX_PATH "${SFML_DIR}")

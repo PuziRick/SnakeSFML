@@ -1,4 +1,11 @@
 #include <SFML/Graphics.hpp>
+
+#include "game.h"
+
+int main() {
+    snake::Game game("config.txt");
+}
+
 /*
 #include "settings.h"
 #include "engine.h"
@@ -11,7 +18,8 @@ int main() {
     snake.start();
 }
 
-*/
+
+
 #include "button.h"
 #include "draw.h"
 #include <map>
@@ -92,3 +100,4 @@ int main() {
         window.display();
     }
 }
+*/

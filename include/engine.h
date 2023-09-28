@@ -13,7 +13,7 @@
 #include "eat.h"
 
 namespace snake {
-
+/*
 // Функции для создания объектов
 TileSet creatTileSet(snake::settings::TileSetSettings tiles_setting);
 snake::Snake creatSnake(snake::settings::SnakeSettings snake_setting);
@@ -61,5 +61,5 @@ private:
     bool relocateFromOutsideTheMap();         // если змейка выходит за границу, переместить её с зеркальной стороны
     bool eating();                            // приятного аппетита
 };
-
+*/
 } // конец namespace snake

@@ -89,7 +89,7 @@ public:
     void placeButtonVertically(LineSegmentInfo segment_info); // размещает кнопку по вертикали
 private:
     Button& _button_ref;                                     // ссылка на кнопку
-    std::map<BUTTON_STATES, sf::Vector2u>& _pos_to_tiles;     // перечисление позиций с текстурами
+    std::map<BUTTON_STATES, sf::Vector2u> _pos_to_tiles;     // перечисление позиций с текстурами
 
     static sf::Vector2f calcCenterCoord(sf::Vector2u size_rect, sf::Vector2f pos_lef_up);  // находит координату центра прямоугольника
     static sf::Vector2f calcLeftUpCoord(sf::Vector2u size_rect, sf::Vector2f pos_center);  // находит координату верхнего левого угла

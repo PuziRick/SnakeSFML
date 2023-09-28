@@ -83,18 +83,28 @@ struct ButtonSettings {
 };
 
 //=============================================================================================================
-//                                           СТРУКТУРЫ НАСТРОЕК
+//                                        ФУНКЦИИ ЗАГРУЗКИ ДАННЫХ
 //=============================================================================================================
 
 // Основные функции загрузки данных
 WindowSettings loadWindowSettings(const snake::ConfigReader& config);
 ButtonSettings loadButtonSettings(const snake::ConfigReader& config);
 MapSettings loadMapSettings(const snake::ConfigReader& config, const std::string& prefix_name = "MAP");
+SnakeSettings loadSnakeSettings(const snake::ConfigReader& config);
 
 GameSettings LoaderSettings(const snake::ConfigReader& config);
 
-// Вспомогательные функции:
+//=============================================================================================================
+//                                        ФУНКЦИИ СОЗДАЮЩИЕ ОБЪЕКТЫ
+//=============================================================================================================
 
+Map creatMap(const ConfigReader& config, const std::string& prefix_name = "MAP");
+TileSet creatTileSet(TileSetSettings tiles_setting);
+snake::Snake creatSnake(const ConfigReader& config);
+
+//=============================================================================================================
+//                                       ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+//=============================================================================================================
 // Конверторы
 TypeOfSnakeBodyTileset convertStringToTypeOfSnake(const std::string& type_str);
 GAME_SPEED convertStringToGameSpeed(const std::string& type_str);

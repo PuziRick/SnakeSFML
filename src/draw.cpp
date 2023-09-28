@@ -179,12 +179,12 @@ snake::LineSegmentInfo::LineSegmentInfo(int pos_on_vertical, int num_of_segments
     , _num_of_segments(num_of_segments) {
 }
 
-snake::DrawButton::DrawButton(sf::RenderWindow &window, snake::TileSet &tile_set, snake::Button &button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles)
+#include <iostream>
+snake::DrawButton::DrawButton(sf::RenderWindow &window, snake::TileSet &tile_set, snake::Button& button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles)
     : Drawable(window, tile_set)
     , _button_ref(button)
     , _pos_to_tiles(pos_to_tiles) {
     CenterButtom();
-    placeButtonVertically(1);
     resizeText();
     centerText();
 }

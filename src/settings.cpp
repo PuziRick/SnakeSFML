@@ -92,7 +92,7 @@ snake::BUTTON_STATES snake::settings::converStringToButtonStat(const std::string
     if (it != converter.end()) {
         return it->second;
     } else {
-        BUTTON_STATES::NORMAL;
+        return BUTTON_STATES::NORMAL;
     }
 }
 
@@ -164,6 +164,18 @@ snake::settings::MapSettings snake::settings::loadMapSettings(const snake::Confi
     return {map_tileset, pos_tiles, size, num_of_textures};
 }
 
+snake::settings::SnakeSettings snake::settings::loadSnakeSettings(const snake::ConfigReader &config) {
+    std::string SNAKE_IMAGE_NAME = findString("SNAKE_TILESET_NAME", config);
+    sf::Vector2u SNAKE_TILES_SIZE = findVector2u("SNAKE_TILE_SIZE", config);
+    float SNAKE_SCALE = findFloat("SNAKE_SCALE", config);
+    auto SNAKE_POS_TILES(std::move(creatSnakeTilesetPos(config, "SNAKE_POS_TILES")));
+    sf::Vector2i SNAKE_START_POS = findVector2i("SNAKE_START_POSITION", config);
+    size_t SNAKE_START_SIZE = static_cast<size_t>(findInt("SNAKE_START_SIZE", config));
+
+    TileSetSettings snake_tileset(SNAKE_IMAGE_NAME, SNAKE_TILES_SIZE, SNAKE_SCALE);
+    return {snake_tileset, SNAKE_POS_TILES, SNAKE_START_POS, SNAKE_START_SIZE};
+}
+
 snake::settings::GameSettings snake::settings::LoaderSettings(const snake::ConfigReader &config) {
     // настройки экрана
     sf::Vector2u WIDESCREEN = findVector2u("WINDOWS_WIDSCREEN", config);
@@ -206,6 +218,22 @@ snake::settings::GameSettings snake::settings::LoaderSettings(const snake::Confi
     EatSettings eat_conf(eat_tileset, EAT_POS_TILES);
 
     return GameSettings(snake_conf, map_conf, window_conf, eat_conf, game_speed);
+}
+
+snake::Map snake::settings::creatMap(const ConfigReader &config, const std::string& prefix_name) {
+    snake::settings::MapSettings map_conf = settings::loadMapSettings(config, prefix_name);
+    snake::Map _map(map_conf._size_of_map, map_conf._num_of_textures);
+    return _map;
+}
+
+snake::TileSet snake::settings::creatTileSet(snake::settings::TileSetSettings tiles_setting) {
+    snake::TileSet tileset(tiles_setting._image_name, tiles_setting._tile_size, tiles_setting._scale);
+    return tileset;
+}
+
+snake::Snake snake::settings::creatSnake(const ConfigReader &config) {
+    SnakeSettings snake_conf = loadSnakeSettings(config);
+    return {snake_conf._started_position, snake_conf._started_size};
 }
 
 snake::settings::ButtonSettings::ButtonSettings(TileSetSettings tile_set, std::map<BUTTON_STATES, sf::Vector2u>& pos_to_tiles)
