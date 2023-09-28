@@ -32,9 +32,9 @@ int main() {
         {snake::BUTTON_STATES::FOCUS, {0,2}}
     };
 
-    snake::Map background({120, 80}, 3);
-    snake::TileSet tiles_back("images/background.png", {64,64}, 0.125f);
-    std::vector<sf::Vector2u> pos_to_back = {{0,0}, {1,0}, {2,0}};
+    snake::Map background({30, 16}, 1);
+    snake::TileSet tiles_back("images/background.png", {32,40}, 4.0f);
+    std::vector<sf::Vector2u> pos_to_back = {{0,0}};
     snake::DrawMap drawBack(window, tiles_back, background, pos_to_back);
 
     snake::Button button_n(L"cтарт");

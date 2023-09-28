@@ -14,6 +14,10 @@
 namespace snake {
 namespace settings {
 
+//=============================================================================================================
+//                                           СТРУКТУРЫ НАСТРОЕК
+//=============================================================================================================
+
 // Настройки необходимые для создания окна
 struct WindowSettings {
     WindowSettings(sf::Vector2u widescreen, std::string name);
@@ -71,18 +75,37 @@ struct GameSettings {
     GAME_SPEED _game_speed;        // скорость игры
 };
 
-// Вспомогательные функции:
-// конвертирует строку в TypeOfSnakeBodyTileset
-TypeOfSnakeBodyTileset convertStringToTypeOfSnake(const std::string& type_str);
-GAME_SPEED convertStringToGameSpeed(const std::string& type_str);
-// создает map для заполнения SNAKE_POS_TILES
-std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> creatSnakeTilesetPos(const snake::ConfigReader& config, const std::string& name);
-// создает вектор координат тайлов
-std::vector<sf::Vector2u> creatPosOfTiles(const snake::ConfigReader& config, const std::string& name);
+// настройки для кнопок
+struct ButtonSettings {
+    ButtonSettings(TileSetSettings tile_set, std::map<BUTTON_STATES, sf::Vector2u>& _pos_to_tiles);
+    TileSetSettings _tiles;                              // тайлсет
+    std::map<BUTTON_STATES, sf::Vector2u> _pos_to_tiles; // координаты тайлов в тайлсете
+};
 
+//=============================================================================================================
+//                                           СТРУКТУРЫ НАСТРОЕК
+//=============================================================================================================
+
+// Основные функции загрузки данных
 WindowSettings loadWindowSettings(const snake::ConfigReader& config);
+ButtonSettings loadButtonSettings(const snake::ConfigReader& config);
+MapSettings loadMapSettings(const snake::ConfigReader& config, const std::string& prefix_name = "MAP");
 
 GameSettings LoaderSettings(const snake::ConfigReader& config);
+
+// Вспомогательные функции:
+
+// Конверторы
+TypeOfSnakeBodyTileset convertStringToTypeOfSnake(const std::string& type_str);
+GAME_SPEED convertStringToGameSpeed(const std::string& type_str);
+BUTTON_STATES converStringToButtonStat(const std::string& type_str);
+
+// создает map для заполнения SNAKE_POS_TILES
+std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> creatSnakeTilesetPos(const snake::ConfigReader& config, const std::string& name);
+// создает вектор координат тайлов 
+std::vector<sf::Vector2u> creatPosOfTiles(const snake::ConfigReader& config, const std::string& name);
+// создаем map для заполнения BUTTON_POS_TILES
+std::map<snake::BUTTON_STATES, sf::Vector2u> creatButtonPosOfTiles(const snake::ConfigReader& config, const std::string& name);
 
 } // конец namespace settings
 } // конец namespace snake

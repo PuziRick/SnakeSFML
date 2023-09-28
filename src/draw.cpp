@@ -174,6 +174,11 @@ void snake::DrawEat::Draw() {
     getWindowRef().draw(_sprite);
 }
 
+snake::LineSegmentInfo::LineSegmentInfo(int pos_on_vertical, int num_of_segments)
+    : _pos_on_vertical(pos_on_vertical)
+    , _num_of_segments(num_of_segments) {
+}
+
 snake::DrawButton::DrawButton(sf::RenderWindow &window, snake::TileSet &tile_set, snake::Button &button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles)
     : Drawable(window, tile_set)
     , _button_ref(button)
@@ -201,10 +206,10 @@ void snake::DrawButton::CenterButtom() {
     centerText();
 }
 
-void snake::DrawButton::placeButtonVertically(int pos_on_vertical, int max_num) {
-    float lenght_segment = static_cast<float>(getWindowRef().getSize().y) / static_cast<float>(max_num);
+void snake::DrawButton::placeButtonVertically(LineSegmentInfo segment_info) {
+    float lenght_segment = static_cast<float>(getWindowRef().getSize().y) / static_cast<float>(segment_info._num_of_segments);
     sf::Vector2f pos = _button_ref.getPosition();
-    pos.y = lenght_segment * static_cast<float>(pos_on_vertical);
+    pos.y = lenght_segment * static_cast<float>(segment_info._pos_on_vertical);
     _button_ref.setPosition(pos);
     centerText();
 }

@@ -82,6 +82,20 @@ snake::settings::GAME_SPEED snake::settings::convertStringToGameSpeed(const std:
     }
 }
 
+snake::BUTTON_STATES snake::settings::converStringToButtonStat(const std::string &type_str) {
+    static std::unordered_map<std::string, snake::BUTTON_STATES> converter = {
+        {"NORMAL", BUTTON_STATES::NORMAL} ,
+        {"ACTIVE", BUTTON_STATES::ACTIVE} ,
+        {"FOCUS", BUTTON_STATES::FOCUS}
+    };
+    auto it = converter.find(type_str);
+    if (it != converter.end()) {
+        return it->second;
+    } else {
+        BUTTON_STATES::NORMAL;
+    }
+}
+
 std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> snake::settings::creatSnakeTilesetPos(const snake::ConfigReader &config, const std::string &name) {
     std::vector<std::string> find_value = findValue(name, config);
     std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> result;
@@ -108,11 +122,46 @@ std::vector<sf::Vector2u> snake::settings::creatPosOfTiles(const snake::ConfigRe
     return result;
 }
 
+std::map<snake::BUTTON_STATES, sf::Vector2u> snake::settings::creatButtonPosOfTiles(const snake::ConfigReader &config, const std::string &name) {
+    std::vector<std::string> find_value = findValue(name, config);
+    std::map<snake::BUTTON_STATES, sf::Vector2u> result;
+    for (std::string& value : find_value) {
+        std::string tmp = name;
+        tmp += ".";
+        tmp += value;
+        result[converStringToButtonStat(value)] = findVector2u(tmp, config);
+    }
+    return result;
+}
+
 snake::settings::WindowSettings snake::settings::loadWindowSettings(const snake::ConfigReader &config) {
     sf::Vector2u WIDESCREEN = findVector2u("WINDOWS_WIDSCREEN", config);
     std::string WINDOW_NAME = findString("WINDOWS_NAME", config);
     WindowSettings window_conf(WIDESCREEN, WINDOW_NAME);
     return window_conf;
+}
+
+snake::settings::ButtonSettings snake::settings::loadButtonSettings(const snake::ConfigReader &config) {
+    std::string button_image_name = findString("BUTTON_TILESET_NAME", config);
+    sf::Vector2u button_tiles_size = findVector2u("BUTTON_TILE_SIZE", config);
+    float button_scale = findFloat("BUTTON_SCALE", config);
+    auto button_pos_tiles(std::move(creatButtonPosOfTiles(config, "BUTTON_POS_TILES")));
+    
+    TileSetSettings tile_set(button_image_name, button_tiles_size, button_scale);
+    return {tile_set, button_pos_tiles};
+}
+
+snake::settings::MapSettings snake::settings::loadMapSettings(const snake::ConfigReader &config, const std::string& prefix_name) {
+    std::string image_name = findString(prefix_name + "_TILESET_NAME", config);
+    sf::Vector2u tile_size = findVector2u(prefix_name + "_TILE_SIZE", config);
+    const sf::Vector2u size = findVector2u(prefix_name + "_SIZE", config);
+    float scale = findFloat(prefix_name + "_SCALE", config);
+    std::vector<sf::Vector2u> pos_tiles = creatPosOfTiles(config, prefix_name + "_POS_TILES");
+    size_t num_of_textures = pos_tiles.size();
+    
+    TileSetSettings map_tileset(image_name, tile_size, scale);
+
+    return {map_tileset, pos_tiles, size, num_of_textures};
 }
 
 snake::settings::GameSettings snake::settings::LoaderSettings(const snake::ConfigReader &config) {
@@ -157,4 +206,9 @@ snake::settings::GameSettings snake::settings::LoaderSettings(const snake::Confi
     EatSettings eat_conf(eat_tileset, EAT_POS_TILES);
 
     return GameSettings(snake_conf, map_conf, window_conf, eat_conf, game_speed);
+}
+
+snake::settings::ButtonSettings::ButtonSettings(TileSetSettings tile_set, std::map<BUTTON_STATES, sf::Vector2u>& pos_to_tiles)
+    : _tiles(tile_set)
+    , _pos_to_tiles(pos_to_tiles) {
 }
