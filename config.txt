@@ -54,6 +54,8 @@ EAT_POS_TILES = {0,0}
 
 GAME_SPEED = NORMAL
 
+FONT_NAME = "fonts/Radiotechnika.ttf"
+
 BUTTON_TILESET_NAME = "images/button.png"
 BUTTON_TILE_SIZE = {645,140}
 BUTTON_SCALE = 0.55

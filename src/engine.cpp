@@ -1,5 +1,5 @@
 #include "engine.h"
-/*
+
 snake::RandomGen::RandomGen(sf::Vector2u map_size) 
     : gen(rd())
     , dist_x(0, static_cast<unsigned int>(map_size.x - 1))
@@ -11,93 +11,62 @@ sf::Vector2i snake::RandomGen::getXY() {
     return rslt;
 }
 
-snake::TileSet snake::creatTileSet(snake::settings::TileSetSettings tiles_setting) {
-    snake::TileSet tileset(tiles_setting._image_name, tiles_setting._tile_size, tiles_setting._scale);
-    return tileset;
-}
-
-snake::Snake snake::creatSnake(snake::settings::SnakeSettings snake_setting) {
-    snake::Snake snake(snake_setting._started_position, snake_setting._started_size);
-    return snake;
-}
-
-snake::Map snake::creatMap(snake::settings::MapSettings map_setting) {
-    snake::Map _map(map_setting._size_of_map, map_setting._num_of_textures);
-    return _map;
-}
-
-snake::DrawMap snake::creatDrawMap(snake::Map &map, snake::TileSet& tiles, sf::RenderWindow &window, snake::settings::MapSettings mapSet) {
-    snake::DrawMap drawMap(window, tiles, map, mapSet._pos_to_tiles);
+snake::DrawMap snake::creatDrawMap(snake::Map &map, snake::TileSet& tiles, sf::RenderWindow &window, const ConfigReader& config) {
+    auto map_conf = settings::loadMapSettings(config);
+    snake::DrawMap drawMap(window, tiles, map, map_conf._pos_to_tiles);
     return drawMap;
 }
 
-snake::DrawSnake snake::creatDrawSnake(snake::Snake &snake, snake::TileSet& tiles, sf::RenderWindow &window, snake::settings::SnakeSettings snakeSet) {
-    snake::DrawSnake drawSnake(window, tiles, snake, snakeSet._pos_to_tiles);
+snake::DrawSnake snake::creatDrawSnake(snake::Snake &snake, snake::TileSet& tiles, sf::RenderWindow &window, const ConfigReader& config) {
+    auto snake_conf = settings::loadSnakeSettings(config);
+    snake::DrawSnake drawSnake(window, tiles, snake, snake_conf._pos_to_tiles);
     return drawSnake;
 }
 
-snake::DrawEat snake::creatDrawEat(snake::Eat &eat, snake::TileSet &tiles, sf::RenderWindow &window, snake::settings::EatSettings eatSet) {
-    snake::DrawEat drawEat(window, tiles, eat, eatSet._pos_to_tiles);
+snake::DrawEat snake::creatDrawEat(snake::Eat &eat, snake::TileSet &tiles, sf::RenderWindow &window, const ConfigReader& config) {
+    auto eat_conf = settings::loadEatSettings(config);
+    snake::DrawEat drawEat(window, tiles, eat, eat_conf._pos_to_tiles);
     return drawEat;
 }
 
-snake::Engine::Engine(snake::settings::GameSettings settings) 
-    : _window(sf::VideoMode(settings._window_conf._widescreen_x, settings._window_conf._widescreen_y), settings._window_conf._window_name) 
-    , _snake(std::move(creatSnake(settings._snake_conf)))
-    , _map(std::move(creatMap(settings._map_conf)))
-    , _snake_tiles(creatTileSet(settings._snake_conf._tiles))
-    , _map_tiles(creatTileSet(settings._map_conf._tiles))
-    , _eat_tiles(creatTileSet(settings._eat_conf._tiles))
-    , _snake_draw(creatDrawSnake(_snake, _snake_tiles, _window, settings._snake_conf))
-    , _map_draw(creatDrawMap(_map, _map_tiles, _window, settings._map_conf))
+snake::Engine::Engine(sf::RenderWindow& window, ConfigReader& config) 
+    : _window_ref(window) 
+    , _snake(settings::creatSnake(config))
+    , _map(settings::creatMap(config))
+    , _snake_tiles(settings::creatTileSet(settings::loadSnakeSettings(config)._tiles))
+    , _map_tiles(settings::creatTileSet(settings::loadMapSettings(config)._tiles))
+    , _eat_tiles(settings::creatTileSet(settings::loadEatSettings(config)._tiles))
+    , _snake_draw(creatDrawSnake(_snake, _snake_tiles, _window_ref, config))
+    , _map_draw(creatDrawMap(_map, _map_tiles, _window_ref, config))
     , _random(_map.getSizeOfMap())
     , _eat(creatFood(), 1u)
-    , _eat_draw(creatDrawEat(_eat, _eat_tiles, _window, settings._eat_conf))
-    , _game_speed(static_cast<float>(settings._game_speed)) {
+    , _eat_draw(creatDrawEat(_eat, _eat_tiles, _window_ref, config))
+    , _game_speed(static_cast<float>(settings::convertStringToGameSpeed(findString("GAME_SPEED", config)))) {
 }
 
-void snake::Engine::start() {
-    sf::Clock _clock;
-    float _global_time = 0;   // глобальное время
-
-    while (_window.isOpen()) {
-        float time = static_cast<float>(_clock.getElapsedTime().asMicroseconds()); // вернуть прошедшее время в мкс
-        _clock.restart();                                                          // перезагрузить время
-        time /= 1000;                                                              // полученное время нормируем (подобрано вручную)
-        _global_time += time;                                                      // и прибовляем к глобальному времени
-
-        sf::Event event;
-        while (_window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                _window.close();
-            }
+snake::settings::GAME_STATE snake::Engine::update(float& global_time) {
+    // обработка инпутов
+    if (global_time > _game_speed) {
+        // если змейка умирает закрываем окно
+        // to do добавить меню и сделать нормально конец игры
+        if (!processInput()) {
+            return snake::settings::GAME_STATE::MENU;
         }
-
-        // обработка инпутов
-        if (_global_time > _game_speed) {
-            // если змейка умирает закрываем окно
-            // to do добавить меню и сделать нормально конец игры
-            if (!processInput()) {
-                _window.close();
-            }
-            // если змейка за границей карты перенести её
-            if (!relocateFromOutsideTheMap()) {
-                _window.close();
-            }
-            // процесс поедания, самый любимый в жизни кота Бориса
-            if (!eating()) {
-                _window.close();
-            }
-            _global_time -= _game_speed;
+        // если змейка за границей карты перенести её
+        if (!relocateFromOutsideTheMap()) {
+            return snake::settings::GAME_STATE::MENU;
         }
-
-        _window.clear();
-        _map_draw.Draw();
-        _eat_draw.Draw();
-        _snake_draw.Draw();
-        
-        _window.display();
+        // процесс поедания, самый любимый в жизни кота Бориса
+        if (!eating()) {
+            return snake::settings::GAME_STATE::MENU;
+        }
+        global_time -= _game_speed;
     }
+    _map_draw.Draw();
+    _eat_draw.Draw();
+    _snake_draw.Draw();
+
+    return snake::settings::GAME_STATE::GAME;
 }
 
 sf::Vector2i snake::Engine::creatFood() {
@@ -154,4 +123,3 @@ bool snake::Engine::eating() {
     }
     return true;
 }
-*/

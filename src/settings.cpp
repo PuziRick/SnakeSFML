@@ -176,6 +176,16 @@ snake::settings::SnakeSettings snake::settings::loadSnakeSettings(const snake::C
     return {snake_tileset, SNAKE_POS_TILES, SNAKE_START_POS, SNAKE_START_SIZE};
 }
 
+snake::settings::EatSettings snake::settings::loadEatSettings(const snake::ConfigReader &config) {
+    std::string EAT_IMAGE_NAME = findString("EAT_IMAGE_NAME", config);
+    sf::Vector2u EAT_TILE_SIZE = findVector2u("EAT_TILE_SIZE", config);
+    float EAT_SCALE = findFloat("EAT_SCALE", config);
+    std::vector<sf::Vector2u> EAT_POS_TILES = creatPosOfTiles(config, "EAT_POS_TILES");
+
+    TileSetSettings eat_tileset(EAT_IMAGE_NAME, EAT_TILE_SIZE, EAT_SCALE);
+    return {eat_tileset, EAT_POS_TILES};
+}
+
 snake::settings::GameSettings snake::settings::LoaderSettings(const snake::ConfigReader &config) {
     // настройки экрана
     sf::Vector2u WIDESCREEN = findVector2u("WINDOWS_WIDSCREEN", config);

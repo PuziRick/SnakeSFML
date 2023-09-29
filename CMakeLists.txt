@@ -57,7 +57,7 @@ file(GLOB SOURCE "${PROJECT_SOURCE_DIR}/src/*.cpp")
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
 # Указываем путь к собранной и установленной SFML
-set(SFML_DIR "D:/CPP/lib/SFML")
+set(SFML_DIR "D:/SFML")
 
 # Добавляем путь к SFML в список префиксов
 list(APPEND CMAKE_PREFIX_PATH "${SFML_DIR}")

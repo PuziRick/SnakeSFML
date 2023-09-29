@@ -82,6 +82,11 @@ struct ButtonSettings {
     std::map<BUTTON_STATES, sf::Vector2u> _pos_to_tiles; // координаты тайлов в тайлсете
 };
 
+// состояние игры
+enum class GAME_STATE {
+    MENU, GAME, SETTING, EXIT
+};
+
 //=============================================================================================================
 //                                        ФУНКЦИИ ЗАГРУЗКИ ДАННЫХ
 //=============================================================================================================
@@ -91,6 +96,7 @@ WindowSettings loadWindowSettings(const snake::ConfigReader& config);
 ButtonSettings loadButtonSettings(const snake::ConfigReader& config);
 MapSettings loadMapSettings(const snake::ConfigReader& config, const std::string& prefix_name = "MAP");
 SnakeSettings loadSnakeSettings(const snake::ConfigReader& config);
+EatSettings loadEatSettings(const snake::ConfigReader& config);
 
 GameSettings LoaderSettings(const snake::ConfigReader& config);
 
