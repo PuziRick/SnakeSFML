@@ -173,3 +173,85 @@ void snake::DrawEat::Draw() {
     setSpritePositionAndScale(_sprite, _eat_ref._coordinate, getTileSetRef().getTileSize(), getTileSetRef().getScale());
     getWindowRef().draw(_sprite);
 }
+
+snake::LineSegmentInfo::LineSegmentInfo(int pos_on_vertical, int num_of_segments)
+    : _pos_on_vertical(pos_on_vertical)
+    , _num_of_segments(num_of_segments) {
+}
+
+#include <iostream>
+snake::DrawButton::DrawButton(sf::RenderWindow &window, snake::TileSet &tile_set, snake::Button& button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles)
+    : Drawable(window, tile_set)
+    , _button_ref(button)
+    , _pos_to_tiles(pos_to_tiles) {
+    CenterButtom();
+    resizeText();
+    centerText();
+}
+
+void snake::DrawButton::Draw() {
+    auto _sprite = getTileSetRef().getSprite(_pos_to_tiles[_button_ref.getState()]);
+    _sprite.setPosition(_button_ref.getPosition().x, _button_ref.getPosition().y);
+    getWindowRef().draw(_sprite);
+    getWindowRef().draw(_button_ref.getText());
+    changeTextColor();
+}
+
+void snake::DrawButton::CenterButtom() {
+    sf::Vector2f center_window = calcCenterCoord(getWindowRef().getSize(), {0,0});
+    sf::Vector2u button_size = getTileSetRef().getScaledSize();
+    sf::Vector2f pos = calcLeftUpCoord(button_size, center_window);
+
+    _button_ref.setPosition(pos);
+    centerText();
+}
+
+void snake::DrawButton::placeButtonVertically(LineSegmentInfo segment_info) {
+    float lenght_segment = static_cast<float>(getWindowRef().getSize().y) / static_cast<float>(segment_info._num_of_segments);
+    sf::Vector2f pos = _button_ref.getPosition();
+    pos.y = lenght_segment * static_cast<float>(segment_info._pos_on_vertical);
+    _button_ref.setPosition(pos);
+    centerText();
+}
+
+sf::Vector2f snake::DrawButton::calcCenterCoord(sf::Vector2u size_rect, sf::Vector2f pos_lef_up) {
+    sf::Vector2f center = pos_lef_up;
+    center.x += static_cast<float>(size_rect.x) / 2;
+    center.y += static_cast<float>(size_rect.y) / 2;
+    return center;
+}
+
+sf::Vector2f snake::DrawButton::calcLeftUpCoord(sf::Vector2u size_rect, sf::Vector2f pos_center) {
+    sf::Vector2f pos_left_up = pos_center;
+    pos_left_up.x -= static_cast<float>(size_rect.x) / 2;
+    pos_left_up.y -= static_cast<float>(size_rect.y) / 2;
+    return pos_left_up;
+}
+
+// отступ от грани кнопки
+constexpr float OFFSET_SIDE = 0.3f;
+
+void snake::DrawButton::resizeText() {
+    float height_button = static_cast<float>(getTileSetRef().getTileSize().y) * getTileSetRef().getScale().y;
+    unsigned int height = static_cast<unsigned int>( height_button - 2 * OFFSET_SIDE * height_button );
+    _button_ref.getText().setCharacterSize(height);
+}
+
+void snake::DrawButton::centerText() {
+    sf::Vector2f center_button = calcCenterCoord(getTileSetRef().getScaledSize(), _button_ref.getPosition());
+    unsigned int char_size = _button_ref.getText().getCharacterSize();
+    center_button.y -= OFFSET_SIDE * static_cast<float>(char_size) / 1.5f;  // поправка на OFFSET_SIDE из-за именения размера текста
+    center_button.x += OFFSET_SIDE * static_cast<float>(char_size) / 1.5f;  // поправка на OFFSET_SIDE из-за именения размера текста
+
+    sf::Vector2u text_size( static_cast<unsigned int>(_button_ref.getText().getString().getSize()) * char_size, char_size);
+    sf::Vector2f pos = calcLeftUpCoord(text_size, center_button);
+    _button_ref.getText().setPosition(pos);
+}
+
+void snake::DrawButton::changeTextColor() {
+    switch (_button_ref.getState()) {
+        case BUTTON_STATES::NORMAL : _button_ref.setTextColor(sf::Color::White); break;
+        case BUTTON_STATES::ACTIVE : _button_ref.setTextColor(sf::Color(88, 107, 144)); break;
+        case BUTTON_STATES::FOCUS : _button_ref.setTextColor(sf::Color(255, 191, 64)); break;
+    }
+}

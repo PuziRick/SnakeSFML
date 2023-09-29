@@ -82,6 +82,20 @@ snake::settings::GAME_SPEED snake::settings::convertStringToGameSpeed(const std:
     }
 }
 
+snake::BUTTON_STATES snake::settings::converStringToButtonStat(const std::string &type_str) {
+    static std::unordered_map<std::string, snake::BUTTON_STATES> converter = {
+        {"NORMAL", BUTTON_STATES::NORMAL} ,
+        {"ACTIVE", BUTTON_STATES::ACTIVE} ,
+        {"FOCUS", BUTTON_STATES::FOCUS}
+    };
+    auto it = converter.find(type_str);
+    if (it != converter.end()) {
+        return it->second;
+    } else {
+        return BUTTON_STATES::NORMAL;
+    }
+}
+
 std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> snake::settings::creatSnakeTilesetPos(const snake::ConfigReader &config, const std::string &name) {
     std::vector<std::string> find_value = findValue(name, config);
     std::map<snake::TypeOfSnakeBodyTileset, sf::Vector2u> result;
@@ -108,6 +122,70 @@ std::vector<sf::Vector2u> snake::settings::creatPosOfTiles(const snake::ConfigRe
     return result;
 }
 
+std::map<snake::BUTTON_STATES, sf::Vector2u> snake::settings::creatButtonPosOfTiles(const snake::ConfigReader &config, const std::string &name) {
+    std::vector<std::string> find_value = findValue(name, config);
+    std::map<snake::BUTTON_STATES, sf::Vector2u> result;
+    for (std::string& value : find_value) {
+        std::string tmp = name;
+        tmp += ".";
+        tmp += value;
+        result[converStringToButtonStat(value)] = findVector2u(tmp, config);
+    }
+    return result;
+}
+
+snake::settings::WindowSettings snake::settings::loadWindowSettings(const snake::ConfigReader &config) {
+    sf::Vector2u WIDESCREEN = findVector2u("WINDOWS_WIDSCREEN", config);
+    std::string WINDOW_NAME = findString("WINDOWS_NAME", config);
+    WindowSettings window_conf(WIDESCREEN, WINDOW_NAME);
+    return window_conf;
+}
+
+snake::settings::ButtonSettings snake::settings::loadButtonSettings(const snake::ConfigReader &config) {
+    std::string button_image_name = findString("BUTTON_TILESET_NAME", config);
+    sf::Vector2u button_tiles_size = findVector2u("BUTTON_TILE_SIZE", config);
+    float button_scale = findFloat("BUTTON_SCALE", config);
+    auto button_pos_tiles(std::move(creatButtonPosOfTiles(config, "BUTTON_POS_TILES")));
+    
+    TileSetSettings tile_set(button_image_name, button_tiles_size, button_scale);
+    return {tile_set, button_pos_tiles};
+}
+
+snake::settings::MapSettings snake::settings::loadMapSettings(const snake::ConfigReader &config, const std::string& prefix_name) {
+    std::string image_name = findString(prefix_name + "_TILESET_NAME", config);
+    sf::Vector2u tile_size = findVector2u(prefix_name + "_TILE_SIZE", config);
+    const sf::Vector2u size = findVector2u(prefix_name + "_SIZE", config);
+    float scale = findFloat(prefix_name + "_SCALE", config);
+    std::vector<sf::Vector2u> pos_tiles = creatPosOfTiles(config, prefix_name + "_POS_TILES");
+    size_t num_of_textures = pos_tiles.size();
+    
+    TileSetSettings map_tileset(image_name, tile_size, scale);
+
+    return {map_tileset, pos_tiles, size, num_of_textures};
+}
+
+snake::settings::SnakeSettings snake::settings::loadSnakeSettings(const snake::ConfigReader &config) {
+    std::string SNAKE_IMAGE_NAME = findString("SNAKE_TILESET_NAME", config);
+    sf::Vector2u SNAKE_TILES_SIZE = findVector2u("SNAKE_TILE_SIZE", config);
+    float SNAKE_SCALE = findFloat("SNAKE_SCALE", config);
+    auto SNAKE_POS_TILES(std::move(creatSnakeTilesetPos(config, "SNAKE_POS_TILES")));
+    sf::Vector2i SNAKE_START_POS = findVector2i("SNAKE_START_POSITION", config);
+    size_t SNAKE_START_SIZE = static_cast<size_t>(findInt("SNAKE_START_SIZE", config));
+
+    TileSetSettings snake_tileset(SNAKE_IMAGE_NAME, SNAKE_TILES_SIZE, SNAKE_SCALE);
+    return {snake_tileset, SNAKE_POS_TILES, SNAKE_START_POS, SNAKE_START_SIZE};
+}
+
+snake::settings::EatSettings snake::settings::loadEatSettings(const snake::ConfigReader &config) {
+    std::string EAT_IMAGE_NAME = findString("EAT_IMAGE_NAME", config);
+    sf::Vector2u EAT_TILE_SIZE = findVector2u("EAT_TILE_SIZE", config);
+    float EAT_SCALE = findFloat("EAT_SCALE", config);
+    std::vector<sf::Vector2u> EAT_POS_TILES = creatPosOfTiles(config, "EAT_POS_TILES");
+
+    TileSetSettings eat_tileset(EAT_IMAGE_NAME, EAT_TILE_SIZE, EAT_SCALE);
+    return {eat_tileset, EAT_POS_TILES};
+}
+
 snake::settings::GameSettings snake::settings::LoaderSettings(const snake::ConfigReader &config) {
     // настройки экрана
     sf::Vector2u WIDESCREEN = findVector2u("WINDOWS_WIDSCREEN", config);
@@ -132,7 +210,7 @@ snake::settings::GameSettings snake::settings::LoaderSettings(const snake::Confi
     // настройки еды
     std::string EAT_IMAGE_NAME = findString("EAT_IMAGE_NAME", config);
     sf::Vector2u EAT_TILE_SIZE = findVector2u("EAT_TILE_SIZE", config);
-    float EAT_SCALE = findFloat("MAP_SCALE", config);
+    float EAT_SCALE = findFloat("EAT_SCALE", config);
     std::vector<sf::Vector2u> EAT_POS_TILES = creatPosOfTiles(config, "EAT_POS_TILES");
     
     // скорость игры
@@ -150,4 +228,25 @@ snake::settings::GameSettings snake::settings::LoaderSettings(const snake::Confi
     EatSettings eat_conf(eat_tileset, EAT_POS_TILES);
 
     return GameSettings(snake_conf, map_conf, window_conf, eat_conf, game_speed);
+}
+
+snake::Map snake::settings::creatMap(const ConfigReader &config, const std::string& prefix_name) {
+    snake::settings::MapSettings map_conf = settings::loadMapSettings(config, prefix_name);
+    snake::Map _map(map_conf._size_of_map, map_conf._num_of_textures);
+    return _map;
+}
+
+snake::TileSet snake::settings::creatTileSet(snake::settings::TileSetSettings tiles_setting) {
+    snake::TileSet tileset(tiles_setting._image_name, tiles_setting._tile_size, tiles_setting._scale);
+    return tileset;
+}
+
+snake::Snake snake::settings::creatSnake(const ConfigReader &config) {
+    SnakeSettings snake_conf = loadSnakeSettings(config);
+    return {snake_conf._started_position, snake_conf._started_size};
+}
+
+snake::settings::ButtonSettings::ButtonSettings(TileSetSettings tile_set, std::map<BUTTON_STATES, sf::Vector2u>& pos_to_tiles)
+    : _tiles(tile_set)
+    , _pos_to_tiles(pos_to_tiles) {
 }

@@ -15,12 +15,9 @@
 namespace snake {
 
 // Функции для создания объектов
-TileSet creatTileSet(snake::settings::TileSetSettings tiles_setting);
-snake::Snake creatSnake(snake::settings::SnakeSettings snake_setting);
-snake::Map creatMap(snake::settings::MapSettings map_setting);
-snake::DrawMap creatDrawMap(snake::Map& map, snake::TileSet& tiles, sf::RenderWindow& window, snake::settings::MapSettings mapSet);
-snake::DrawSnake creatDrawSnake(snake::Snake& snake, snake::TileSet& tiles, sf::RenderWindow& window, snake::settings::SnakeSettings snakeSet);
-snake::DrawEat creatDrawEat(snake::Eat& eat, snake::TileSet& tiles, sf::RenderWindow& window, snake::settings::EatSettings eatSet);
+snake::DrawMap creatDrawMap(snake::Map& map, snake::TileSet& tiles, sf::RenderWindow& window, const ConfigReader& config);
+snake::DrawSnake creatDrawSnake(snake::Snake& snake, snake::TileSet& tiles, sf::RenderWindow& window, const ConfigReader& config);
+snake::DrawEat creatDrawEat(snake::Eat& eat, snake::TileSet& tiles, sf::RenderWindow& window, const ConfigReader& config);
 
 // Объекты для создания случайных координат еды
 struct RandomGen {
@@ -37,10 +34,10 @@ struct RandomGen {
 
 class Engine {
 public:
-    Engine(settings::GameSettings settings);  // Передаём основные настройки
-    void start();                             // основная функция игры
+    Engine(sf::RenderWindow& window, ConfigReader& config);  // Передаём основные настройки
+    settings::GAME_STATE update(float& global_time);          // основная функция игры
 private:
-    sf::RenderWindow _window;                 // окно для отрисовки
+    sf::RenderWindow& _window_ref;            // окно для отрисовки
     Snake _snake;                             // змейка
     Map _map;                                 // карта
     snake::TileSet _snake_tiles;              // тайлсет змейки

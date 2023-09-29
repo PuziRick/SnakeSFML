@@ -8,6 +8,7 @@
 #include "snake.h"
 #include "map.h"
 #include "eat.h"
+#include "button.h"
 
 namespace snake {
 
@@ -74,4 +75,26 @@ private:
     std::vector<sf::Vector2u> _pos_to_tiles; // перечисление позиций с текстурами
 };
 
+struct LineSegmentInfo {
+    LineSegmentInfo(int pos_on_vertical = 1, int num_of_segments = 5);
+    int _pos_on_vertical;    // номер сегмента
+    int _num_of_segments;    // количество сегментов
+};
+
+class DrawButton : public Drawable {
+public:
+    DrawButton(sf::RenderWindow& window, snake::TileSet& tile_set, snake::Button& button, std::map<snake::BUTTON_STATES, sf::Vector2u>& pos_to_tiles);
+    void Draw() override;
+    void CenterButtom();  // центрирует кнопку по координатам {x,y}
+    void placeButtonVertically(LineSegmentInfo segment_info); // размещает кнопку по вертикали
+private:
+    Button& _button_ref;                                     // ссылка на кнопку
+    std::map<BUTTON_STATES, sf::Vector2u> _pos_to_tiles;     // перечисление позиций с текстурами
+
+    static sf::Vector2f calcCenterCoord(sf::Vector2u size_rect, sf::Vector2f pos_lef_up);  // находит координату центра прямоугольника
+    static sf::Vector2f calcLeftUpCoord(sf::Vector2u size_rect, sf::Vector2f pos_center);  // находит координату верхнего левого угла
+    void resizeText();      // изменяет разме текста
+    void centerText();      // центрирует текст в кнопке
+    void changeTextColor(); // изменяет цвет текста
+};
 } // конец namespace snake

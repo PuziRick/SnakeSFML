@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# CMakeLists
+CMakeLists.txt
+
 #
 *.cmd
 
