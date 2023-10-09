@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Определяем проект
 project(${PROJECT_NAME})
-option(BUILD_TESTS "Включить модульное тестирование" OFF)
-option(BUILD_LIBS "Включить сборку библиотек" OFF)
+option(BUILD_TESTS "Включить модульное тестирование" ON)
+option(BUILD_LIBS "Включить сборку библиотек" ON)
 
 # ===================================================================
 #                       Настройка компилятора
@@ -99,7 +99,7 @@ endif()
 #                         Копируем спрайты
 # ===================================================================
 
-add_custom_target(copy ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/images ${CMAKE_BINARY_DIR}/images)
+#add_custom_target(copy ALL COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/images ${CMAKE_BINARY_DIR}/images)
 
 file(GLOB_RECURSE fonts_files "fonts/*.*")
 foreach(font_file ${fonts_files})

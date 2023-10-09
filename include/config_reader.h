@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <queue>
+#include <set>
 #include <SFML/Graphics.hpp>
 
 // Правила для файла с настройками:
@@ -32,17 +33,18 @@ SettingsData ParseStringValue(std::string_view str, size_t& start_pos);         
 SettingsData ParseValue(std::string_view str, size_t& start_pos);               // выделяет значение переменной из строки
 void ParseArray(std::string_view str, size_t& start_pos, SettingsData& header); // выделяет массив значений из строки
 
-std::string combineSettingsIntoOneLine(std::ifstream& file); // объединить настройки из потока file в одну строку
-std::vector<SettingsData> ParseSetting(std::ifstream& file); // разбивает входной поток file на вектор настроек
+std::string combineSettingsIntoOneLine(std::fstream& file); // объединить настройки из потока file в одну строку
+std::vector<SettingsData> ParseSetting(const std::string& file); // разбивает входной поток file на вектор настроек
 
 class ConfigReader {
 public:
     explicit ConfigReader(const std::string& file_name);
-    ~ConfigReader();
-    std::vector<SettingsData>& getAllSettings(); // возвращает все настройки
-    std::shared_ptr<SettingsData> find(const std::string& value, const std::shared_ptr<SettingsData> start_find = nullptr) const;
+    void reload();                                           // перезагрузить данные
+    const std::vector<SettingsData>& getAllSettings() const; // возвращает все настройки
+    std::string getFileName();                               // возвращает название файла
+    std::shared_ptr<SettingsData> find(const std::string& value, const std::shared_ptr<SettingsData> start_find = nullptr);
 private:
-    std::ifstream _file;
+    std::string _file_name;
     std::vector<SettingsData> _settings;
 };
 
@@ -50,7 +52,7 @@ std::queue<std::string> spliteLinesIntoName(const std::string& line);     // р�
 
 // функция для поиска нужной настройки (вернет empty если значение не найдено)
 // синтаксис для поиска вложенного массива "NAME_ARR.NAME_NESTED_ARR"
-std::vector<std::string> findValue(const std::string& name_of_setting, const ConfigReader& config); 
+std::vector<std::string> findValue(const std::string& name_of_setting, const ConfigReader& config);
 
 // Вспомогательные функции, конвертирующие найденные настройки в нужный формат
 sf::Vector2f findVector2f(const std::string& name_of_setting, const ConfigReader& config);
@@ -59,6 +61,22 @@ sf::Vector2u findVector2u(const std::string& name_of_setting, const ConfigReader
 float findFloat(const std::string& name_of_setting, const ConfigReader& config);
 int findInt(const std::string& name_of_setting, const ConfigReader& config);
 std::string findString(const std::string& name_of_setting, const ConfigReader& config);
+
+// Функции переводящие данные из config в строку
+std::string makeTextFromConfig(const ConfigReader& config_ref);
+std::string settingToString(const SettingsData& setting_val);
+
+// класс для внесения изменений в настройки, RAII - диструктор вносит изменения в config файл
+class SettingChanger {
+public:
+    SettingChanger(ConfigReader& config);
+    ~SettingChanger();
+    bool hasChangedSettings() const;       // возвращает true если настройки были изменены
+    void changeValue(const std::string& name_of_setting, const std::vector<std::string>& new_value);
+private:
+    ConfigReader& _config_ref;
+    std::set<std::string> _changed_setting; // все настройки, которые были изменены
+};
 
 } // конец namespace snake
 

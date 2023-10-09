@@ -8,11 +8,10 @@
 #include <map>
 
 void TestValueReader() {
-    std::ifstream _file("tested_configs/config_value.txt");
-    ASSERT_HINT(_file.is_open(), "Couldn't open the test config file");
+    std::string _file_name("tested_configs/config_value.txt");
 
     // Парсим тестовый конфиг файл
-    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file);
+    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file_name);
 
     // Колхоз и мне очень стыдно
     const std::vector<std::pair<std::string, std::string>> CORRECT_ARR = {
@@ -38,15 +37,13 @@ void TestValueReader() {
         }
         ++pos_correct_arr;
     }
-
-    _file.close();
 }
 
 void TestStringReader() {
-    std::ifstream _file("tested_configs/config_string.txt");
-    ASSERT_HINT(_file.is_open(), "Сouldn't open the test config file");
+    std::string _file_name("tested_configs/config_string.txt");
+
     // Парсим тестовый конфиг файл
-    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file);
+    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file_name);
 
     const std::vector<std::pair<std::string, std::string>> CORRECT_ARR = {
         {"NORMAL_FORMAT", "string 1"} ,
@@ -74,15 +71,12 @@ void TestStringReader() {
         }
         ++pos_correct_arr;
     }
-
-    _file.close();
 }
 
 void TestCombinedSettingsData() {
-    std::ifstream _file("tested_configs/config_combine.txt");
-    ASSERT_HINT(_file.is_open(), "Сouldn't open the test config file");
+    std::string _file_name("tested_configs/config_combine.txt");
     // Парсим тестовый конфиг файл
-    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file);
+    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file_name);
     
     const std::vector<std::pair<std::string, std::string>> CORRECT_ARR = {
         {"NORMAL_FORMAT", "1"} ,
@@ -121,8 +115,6 @@ void TestCombinedSettingsData() {
         }
         ++pos_correct_arr;
     }
-
-    _file.close();
 }
 
 struct Array_SettingsData {
@@ -131,10 +123,9 @@ struct Array_SettingsData {
 };
 
 void Test1DArray() {
-    std::ifstream _file("tested_configs/config_array.txt");
-    ASSERT_HINT(_file.is_open(), "Сouldn't open the test config file");
+    std::string _file_name("tested_configs/config_array.txt");
     // Парсим тестовый конфиг файл
-    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file);
+    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file_name);
 
     std::vector<Array_SettingsData> CORRECT_ARR = {
         {"NORMAL_FORMAT_1", {"1","2"}} ,
@@ -166,15 +157,12 @@ void Test1DArray() {
         }
         ++pos_correct_arr;
     }
-
-    _file.close();
 }
 
 void Test2DArray() {
-    std::ifstream _file("tested_configs/config_array_2d.txt");
-    ASSERT_HINT(_file.is_open(), "Сouldn't open the test config file");
+    std::string _file_name("tested_configs/config_array_2d.txt");
     // Парсим тестовый конфиг файл
-    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file);
+    std::vector<snake::SettingsData> arr = snake::ParseSetting(_file_name);
     std::pair<std::string, std::vector<Array_SettingsData>> CORRECT_ARR = {
         "SNAKE_POS_TILES", {
             {"HEAD_UP",  {"0","0"}} , 
@@ -277,10 +265,70 @@ void TestConfigFind() {
 
     const std::string REQUEST_TO_WHICH_THERE_IS_NO_RESPONSE = "WHAT_IS_THE_MEANING_OF_LIFE";
     std::vector<std::string> answer = snake::findValue(REQUEST_TO_WHICH_THERE_IS_NO_RESPONSE, config_reader);
-    ASSERT_HINT(answer.empty(), "Incorrect found empty value");
+    ASSERT_HINT(answer.empty(), "Incorrect found empty value"); 
 }
 
-// to do добавить проверку на большом файле настроек
+void TestChangeData() {
+    std::string file_name = "tested_configs/config_change_data.txt";
+    snake::ConfigReader config_reader(file_name);
+    // все возможные запросы и ожидаемые ответы
+    const std::map<std::string, std::vector<std::string>> REQUESTS_ANSWER = {
+        {"ARRAY" , {"960", "640"}} ,
+        {"STRING" , {"string1 and string2"}} ,
+        {"VALUE" , {"1"}} ,
+        {"2D_ARRAY", {"FIRST_ARR", "SECOND_ARR", "THIRD_ARR"}} ,
+        {"2D_ARRAY.FIRST_ARR", {"2", "3"}} ,
+        {"2D_ARRAY.SECOND_ARR", {"4", "5"}} ,
+        {"2D_ARRAY.THIRD_ARR", {"6", "7"}}
+    };
+    const std::map<std::string, std::vector<std::string>> CHANGED_REQUESTS_ANSWER = {
+        {"ARRAY" , {"1080", "900"}} ,
+        {"STRING" , {"new string"}} ,
+        {"VALUE" , {"10"}} ,
+        {"2D_ARRAY", {"FIRST_ARR", "SECOND_ARR", "THIRD_ARR"}} ,
+        {"2D_ARRAY.FIRST_ARR", {"20", "30"}} ,
+        {"2D_ARRAY.SECOND_ARR", {"40", "50"}} ,
+        {"2D_ARRAY.THIRD_ARR", {"60", "70"}}
+    };
+    // проверяем значения без изменения
+    for (const auto& [name, value] : REQUESTS_ANSWER) {
+        std::vector<std::string> answer = snake::findValue(name, config_reader);
+        ASSERT_EQUAL_HINT(answer.size(), value.size(), "Incorrect size of found values");
+        for (size_t i = 0; i < answer.size(); ++i) {
+            ASSERT_EQUAL_HINT(answer[i], value[i], "Incorrect value found");
+        }
+    }
+    // меняем данные, т.к. snake::SettingChanger сделан по идиоме RAII, ограничиваем его область видимости {}
+    {
+        snake::SettingChanger changer(config_reader);
+        changer.changeValue("ARRAY", {"1080", "900"});
+        changer.changeValue("STRING", {"\"new string\""});
+        changer.changeValue("VALUE", {"10"});
+        changer.changeValue("2D_ARRAY.FIRST_ARR", {"20","30"});
+        changer.changeValue("2D_ARRAY.SECOND_ARR", {"40","50"});
+        changer.changeValue("2D_ARRAY.THIRD_ARR", {"60","70"});
+        // проверяем значения
+        for (const auto& [name, value] : CHANGED_REQUESTS_ANSWER) {
+            std::vector<std::string> answer = snake::findValue(name, config_reader);
+            ASSERT_EQUAL_HINT(answer.size(), value.size(), "Incorrect size of found values");
+            for (size_t i = 0; i < answer.size(); ++i) {
+                if (answer[i] != "\"new string\"" ) {
+                    ASSERT_EQUAL_HINT(answer[i], value[i], "Incorrect value found");
+                }
+            }
+        }
+    }
+    // в конце проверям что данные перезаписались в config файл
+    config_reader.reload();
+    for (const auto& [name, value] : REQUESTS_ANSWER) {
+        std::vector<std::string> answer = snake::findValue(name, config_reader);
+        for (size_t i = 0; i < answer.size(); ++i) {
+            if (answer[i] != "FIRST_ARR" && answer[i] != "SECOND_ARR" && answer[i] != "THIRD_ARR" ) {
+                ASSERT_HINT(answer[i] != value[i], "Incorrect value found");
+            }
+        }
+    }
+}
 
 void TestConfigReader() {
     RUN_TEST_TAB(TestValueReader, 1);  // проверяем чтение переменных
@@ -289,4 +337,5 @@ void TestConfigReader() {
     RUN_TEST_TAB(Test2DArray, 1);      // проверяем чтение двумерного массива
     RUN_TEST_TAB(TestCombinedSettingsData, 1); // проверяем чтение всех видов переменных
     RUN_TEST_TAB(TestConfigFind, 1);   // проверяем поиск значения настройки
+    RUN_TEST_TAB(TestChangeData, 1);   // проверяем запись данных
 }

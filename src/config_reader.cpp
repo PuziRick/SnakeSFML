@@ -37,7 +37,7 @@ size_t snake::findStringValue(std::string_view& str, size_t start_pos) {
     return returned_pos;
 }
 
-std::string snake::combineSettingsIntoOneLine(std::ifstream &file) {
+std::string snake::combineSettingsIntoOneLine(std::fstream &file) {
     std::string settings;
     std::string line;
     while (std::getline(file, line)) {
@@ -85,7 +85,11 @@ void snake::ParseArray(std::string_view str, size_t &start_pos, SettingsData &he
     ParseArray(str, start_pos, header);
 }
 
-std::vector<snake::SettingsData> snake::ParseSetting(std::ifstream& file) {
+std::vector<snake::SettingsData> snake::ParseSetting(const std::string& file_name) {
+    std::fstream file(file_name);\
+    if (!file.is_open()) {
+        std::cerr << "Fatal error: file is could't be opened" << std::endl;
+    }
     std::string settings(std::move(combineSettingsIntoOneLine(file)));
     std::string_view setting_view(settings);
     std::vector<SettingsData> result;
@@ -113,7 +117,7 @@ std::vector<snake::SettingsData> snake::ParseSetting(std::ifstream& file) {
             result.back().addValue(std::make_shared<SettingsData>(ParseValue(setting_view, start_pos)));
         }
     }
-
+    file.close();
     return result;
 }
 
@@ -134,16 +138,15 @@ std::queue<std::string> snake::spliteLinesIntoName(const std::string &line) {
     return result;
 }
 
-std::vector<std::string> snake::findValue(const std::string &name_of_setting, const snake::ConfigReader &config)
-{
+std::vector<std::string> snake::findValue(const std::string& name_of_setting, const snake::ConfigReader& config) {
     std::queue<std::string> names(std::move(spliteLinesIntoName(name_of_setting)));
     std::vector<std::string> result;
 
-    auto find_SettingsData = config.find(names.front());
+    auto find_SettingsData = const_cast<ConfigReader&>(config).find(names.front());
     names.pop();
 
     while (!names.empty() && find_SettingsData.get() != nullptr) {
-        find_SettingsData = config.find(names.front(), find_SettingsData);
+        find_SettingsData = const_cast<ConfigReader&>(config).find(names.front(), find_SettingsData);
         names.pop();
     }
 
@@ -165,22 +168,23 @@ void snake::SettingsData::addValue(std::shared_ptr<SettingsData> value) {
 }
 
 snake::ConfigReader::ConfigReader(const std::string& file_name)
-    : _file(std::move(file_name))
-    , _settings(ParseSetting(_file)) {
-    if (!_file.is_open()) {
-        std::cerr << "Fatal error: file is could't be opened" << std::endl;
-    }
+    : _file_name(file_name)
+    , _settings(ParseSetting(_file_name)) {
 }
 
-snake::ConfigReader::~ConfigReader() {
-    _file.close();
+void snake::ConfigReader::reload() {
+    _settings = std::move(ParseSetting(_file_name));
 }
 
-std::vector<snake::SettingsData>& snake::ConfigReader::getAllSettings() {
+const std::vector<snake::SettingsData>& snake::ConfigReader::getAllSettings() const {
     return _settings;
 }
 
-std::shared_ptr<snake::SettingsData> snake::ConfigReader::find(const std::string& value, const std::shared_ptr<SettingsData> start_find) const {
+std::string snake::ConfigReader::getFileName() {
+    return _file_name;
+}
+
+std::shared_ptr<snake::SettingsData> snake::ConfigReader::find(const std::string& value, const std::shared_ptr<SettingsData> start_find) {
     if (start_find.get() != nullptr) {
         auto it = std::find_if(start_find->_value.begin(), start_find->_value.end(), [&value](const std::shared_ptr<SettingsData> SettingsData) {
             return SettingsData->_name_var == value;
@@ -238,4 +242,93 @@ int snake::findInt(const std::string &name_of_setting, const ConfigReader &confi
 std::string snake::findString(const std::string &name_of_setting, const ConfigReader &config) {
     std::vector<std::string> find_value = findValue(name_of_setting, config);
     return find_value.front();
+}
+
+std::string snake::makeTextFromConfig(const ConfigReader& config_ref) {
+    const std::vector<snake::SettingsData>& settings_cref = config_ref.getAllSettings();
+    std::string result;
+    for (const SettingsData& val : settings_cref) {
+        result += settingToString(val);
+    }
+    return result;
+}
+
+std::string snake::settingToString(const SettingsData &setting_val) {
+    // Переписываем название и ставим знак =
+    std::string str_result = setting_val._name_var;
+    str_result += " = ";
+    // Является ли переменная массивом
+    if (setting_val._value.size() > 1 || !setting_val._value.front()->_value.empty()) {
+        str_result += "{ ";
+        // Является ли переменная вложенным массивом
+        if (!setting_val._value.front()->_value.empty()) {
+            bool is_frist = true;
+            for (std::shared_ptr<snake::SettingsData> val : setting_val._value) {
+                if (is_frist) {
+                    str_result += "\n      ";
+                    is_frist = false;
+                } else {
+                    str_result += "    , ";
+                }
+                str_result += settingToString(*val);
+            }
+        } else {
+            bool is_first = true;
+            for (std::shared_ptr<snake::SettingsData> val : setting_val._value) {
+                if (!is_first) {
+                    str_result += ", ";
+                }
+                str_result += val->_name_var;
+                is_first = false;
+            }
+        }
+        str_result += " }\n";
+    } else {
+        str_result += setting_val._value.front()->_name_var;
+        str_result += "\n";
+    }
+    return str_result;
+}
+
+snake::SettingChanger::SettingChanger(ConfigReader &config)
+    :_config_ref(config) {
+}
+
+snake::SettingChanger::~SettingChanger() {
+    if (!hasChangedSettings()) {
+        return;
+    }
+    // открываем поток для записи новых значений настроек
+    std::ofstream _file_out(_config_ref.getFileName());
+    std::string config_text(std::move(makeTextFromConfig(_config_ref)));
+    _file_out << config_text;
+    // закрываем поток записи
+    _file_out.close();
+}
+
+bool snake::SettingChanger::hasChangedSettings() const {
+    return !_changed_setting.empty();
+}
+
+void snake::SettingChanger::changeValue(const std::string &name_of_setting, const std::vector<std::string> &new_value) {
+    // Разбиваем запрос
+    std::queue<std::string> names(std::move(spliteLinesIntoName(name_of_setting)));
+
+    // Находим значения настроек
+    auto find_SettingsData = _config_ref.find(names.front());
+    names.pop();
+
+    while (!names.empty() && find_SettingsData.get() != nullptr) {
+        find_SettingsData = _config_ref.find(names.front(), find_SettingsData);
+        names.pop();
+    }
+    
+    // Проверяем что нужная настройка найдена и размер передаваемых данных равен размеру найденных настроек
+    if (find_SettingsData.get() != nullptr && new_value.size() == find_SettingsData->_value.size()) {
+        for (size_t value_i = 0; value_i < find_SettingsData->_value.size(); ++value_i) {
+            find_SettingsData->_value[value_i]->_name_var = new_value[value_i];
+        }
+        // если настройка была найдена, то записываем её в _changed_setting
+        _changed_setting.insert(name_of_setting);
+    }
 }

@@ -1,0 +1,8 @@
+ARRAY = {960, 640}
+STRING = "string1 and string2"
+VALUE = 1
+2D_ARRAY = {
+    FIRST_ARR = {2, 3} ,
+    SECOND_ARR = {4, 5} ,
+    THIRD_ARR = {6, 7}
+}
