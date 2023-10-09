@@ -7,7 +7,7 @@ snake::settings::WindowSettings::WindowSettings(sf::Vector2u widescreen, std::st
     , _window_name(name) {
 }
 
-snake::settings::TileSetSettings::TileSetSettings(std::string image_name, sf::Vector2u tile_size, float scale)
+snake::settings::TileSetSettings::TileSetSettings(std::string image_name, sf::Vector2u tile_size, sf::Vector2f scale)
     : _image_name(image_name)
     , _tile_size(tile_size)
     , _scale(scale) {
@@ -144,7 +144,7 @@ snake::settings::WindowSettings snake::settings::loadWindowSettings(const snake:
 snake::settings::ButtonSettings snake::settings::loadButtonSettings(const snake::ConfigReader &config) {
     std::string button_image_name = findString("BUTTON_TILESET_NAME", config);
     sf::Vector2u button_tiles_size = findVector2u("BUTTON_TILE_SIZE", config);
-    float button_scale = findFloat("BUTTON_SCALE", config);
+    sf::Vector2f button_scale = findVector2f("BUTTON_SCALE", config);
     auto button_pos_tiles(std::move(creatButtonPosOfTiles(config, "BUTTON_POS_TILES")));
     
     TileSetSettings tile_set(button_image_name, button_tiles_size, button_scale);
@@ -155,7 +155,7 @@ snake::settings::MapSettings snake::settings::loadMapSettings(const snake::Confi
     std::string image_name = findString(prefix_name + "_TILESET_NAME", config);
     sf::Vector2u tile_size = findVector2u(prefix_name + "_TILE_SIZE", config);
     const sf::Vector2u size = findVector2u(prefix_name + "_SIZE", config);
-    float scale = findFloat(prefix_name + "_SCALE", config);
+    sf::Vector2f scale = findVector2f(prefix_name + "_SCALE", config);
     std::vector<sf::Vector2u> pos_tiles = creatPosOfTiles(config, prefix_name + "_POS_TILES");
     size_t num_of_textures = pos_tiles.size();
     
@@ -167,7 +167,7 @@ snake::settings::MapSettings snake::settings::loadMapSettings(const snake::Confi
 snake::settings::SnakeSettings snake::settings::loadSnakeSettings(const snake::ConfigReader &config) {
     std::string SNAKE_IMAGE_NAME = findString("SNAKE_TILESET_NAME", config);
     sf::Vector2u SNAKE_TILES_SIZE = findVector2u("SNAKE_TILE_SIZE", config);
-    float SNAKE_SCALE = findFloat("SNAKE_SCALE", config);
+    sf::Vector2f SNAKE_SCALE = findVector2f("SNAKE_SCALE", config);
     auto SNAKE_POS_TILES(std::move(creatSnakeTilesetPos(config, "SNAKE_POS_TILES")));
     sf::Vector2i SNAKE_START_POS = findVector2i("SNAKE_START_POSITION", config);
     size_t SNAKE_START_SIZE = static_cast<size_t>(findInt("SNAKE_START_SIZE", config));
@@ -179,7 +179,7 @@ snake::settings::SnakeSettings snake::settings::loadSnakeSettings(const snake::C
 snake::settings::EatSettings snake::settings::loadEatSettings(const snake::ConfigReader &config) {
     std::string EAT_IMAGE_NAME = findString("EAT_IMAGE_NAME", config);
     sf::Vector2u EAT_TILE_SIZE = findVector2u("EAT_TILE_SIZE", config);
-    float EAT_SCALE = findFloat("EAT_SCALE", config);
+    sf::Vector2f EAT_SCALE = findVector2f("EAT_SCALE", config);
     std::vector<sf::Vector2u> EAT_POS_TILES = creatPosOfTiles(config, "EAT_POS_TILES");
 
     TileSetSettings eat_tileset(EAT_IMAGE_NAME, EAT_TILE_SIZE, EAT_SCALE);
@@ -194,7 +194,7 @@ snake::settings::GameSettings snake::settings::LoaderSettings(const snake::Confi
     // настройки змейки
     std::string SNAKE_IMAGE_NAME = findString("SNAKE_TILESET_NAME", config);
     sf::Vector2u SNAKE_TILES_SIZE = findVector2u("SNAKE_TILE_SIZE", config);
-    float SNAKE_SCALE = findFloat("SNAKE_SCALE", config);
+    sf::Vector2f SNAKE_SCALE = findVector2f("SNAKE_SCALE", config);
     auto SNAKE_POS_TILES(std::move(creatSnakeTilesetPos(config, "SNAKE_POS_TILES")));
     sf::Vector2i SNAKE_START_POS = findVector2i("SNAKE_START_POSITION", config);
     size_t SNAKE_START_SIZE = static_cast<size_t>(findInt("SNAKE_START_SIZE", config));
@@ -203,14 +203,14 @@ snake::settings::GameSettings snake::settings::LoaderSettings(const snake::Confi
     std::string MAP_IMAGE_NAME = findString("MAP_TILESET_NAME", config);
     sf::Vector2u MAP_TILE_SIZE = findVector2u("MAP_TILE_SIZE", config);
     const sf::Vector2u MAP_SIZE = findVector2u("MAP_SIZE", config);
-    float MAP_SCALE = findFloat("MAP_SCALE", config);
+    sf::Vector2f MAP_SCALE = findVector2f("MAP_SCALE", config);
     std::vector<sf::Vector2u> MAP_POS_TILES = creatPosOfTiles(config, "MAP_POS_TILES");
     size_t MAP_NUM_OF_TEXTURES = MAP_POS_TILES.size();
 
     // настройки еды
     std::string EAT_IMAGE_NAME = findString("EAT_IMAGE_NAME", config);
     sf::Vector2u EAT_TILE_SIZE = findVector2u("EAT_TILE_SIZE", config);
-    float EAT_SCALE = findFloat("EAT_SCALE", config);
+    sf::Vector2f EAT_SCALE = findVector2f("EAT_SCALE", config);
     std::vector<sf::Vector2u> EAT_POS_TILES = creatPosOfTiles(config, "EAT_POS_TILES");
     
     // скорость игры

@@ -74,8 +74,12 @@ public:
     bool hasChangedSettings() const;       // возвращает true если настройки были изменены
     void changeValue(const std::string& name_of_setting, const std::vector<std::string>& new_value);
 private:
+    void reScaleGameObj();
+    void reSizeBackGround();
     ConfigReader& _config_ref;
     std::set<std::string> _changed_setting; // все настройки, которые были изменены
+
+    static sf::Vector2f calcNewScale(sf::Vector2u screen_size, sf::Vector2u map_size, sf::Vector2u tile_size);
 };
 
 } // конец namespace snake

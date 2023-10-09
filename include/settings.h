@@ -28,10 +28,10 @@ struct WindowSettings {
 
 // Настройки необходимые для создания окна
 struct TileSetSettings {
-    TileSetSettings(std::string image_name, sf::Vector2u tile_size, float scale);
+    TileSetSettings(std::string image_name, sf::Vector2u tile_size, sf::Vector2f scale);
     std::string _image_name;      // название файла с текстурами
     sf::Vector2u _tile_size;      // размер одного тайла
-    float _scale;                 // масштаб
+    sf::Vector2f _scale;                 // масштаб
 };
 
 // Настройки необходимые для создания змейки

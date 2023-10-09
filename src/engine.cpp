@@ -30,18 +30,19 @@ snake::DrawEat snake::creatDrawEat(snake::Eat &eat, snake::TileSet &tiles, sf::R
 }
 
 snake::Engine::Engine(sf::RenderWindow& window, ConfigReader& config) 
-    : _window_ref(window) 
-    , _snake(settings::creatSnake(config))
-    , _map(settings::creatMap(config))
-    , _snake_tiles(settings::creatTileSet(settings::loadSnakeSettings(config)._tiles))
-    , _map_tiles(settings::creatTileSet(settings::loadMapSettings(config)._tiles))
-    , _eat_tiles(settings::creatTileSet(settings::loadEatSettings(config)._tiles))
-    , _snake_draw(creatDrawSnake(_snake, _snake_tiles, _window_ref, config))
-    , _map_draw(creatDrawMap(_map, _map_tiles, _window_ref, config))
+    : _config_ref(config)
+    , _window_ref(window) 
+    , _snake(settings::creatSnake(_config_ref))
+    , _map(settings::creatMap(_config_ref))
+    , _snake_tiles(settings::creatTileSet(settings::loadSnakeSettings(_config_ref)._tiles))
+    , _map_tiles(settings::creatTileSet(settings::loadMapSettings(_config_ref)._tiles))
+    , _eat_tiles(settings::creatTileSet(settings::loadEatSettings(_config_ref)._tiles))
+    , _snake_draw(creatDrawSnake(_snake, _snake_tiles, _window_ref, _config_ref))
+    , _map_draw(creatDrawMap(_map, _map_tiles, _window_ref, _config_ref))
     , _random(_map.getSizeOfMap())
     , _eat(creatFood(), 1u)
-    , _eat_draw(creatDrawEat(_eat, _eat_tiles, _window_ref, config))
-    , _game_speed(static_cast<float>(settings::convertStringToGameSpeed(findString("GAME_SPEED", config)))) {
+    , _eat_draw(creatDrawEat(_eat, _eat_tiles, _window_ref, _config_ref))
+    , _game_speed(static_cast<float>(settings::convertStringToGameSpeed(findString("GAME_SPEED", _config_ref)))) {
 }
 
 snake::settings::GAME_STATE snake::Engine::update(float& global_time) {
@@ -50,14 +51,17 @@ snake::settings::GAME_STATE snake::Engine::update(float& global_time) {
         // если змейка умирает закрываем окно
         // to do добавить меню и сделать нормально конец игры
         if (!processInput()) {
+            reload();
             return snake::settings::GAME_STATE::MENU;
         }
         // если змейка за границей карты перенести её
         if (!relocateFromOutsideTheMap()) {
+            reload();
             return snake::settings::GAME_STATE::MENU;
         }
         // процесс поедания, самый любимый в жизни кота Бориса
         if (!eating()) {
+            reload();
             return snake::settings::GAME_STATE::MENU;
         }
         global_time -= _game_speed;
@@ -67,6 +71,10 @@ snake::settings::GAME_STATE snake::Engine::update(float& global_time) {
     _snake_draw.Draw();
 
     return snake::settings::GAME_STATE::GAME;
+}
+
+void snake::Engine::reload() {
+    _snake = settings::creatSnake(_config_ref);
 }
 
 sf::Vector2i snake::Engine::creatFood() {

@@ -34,9 +34,11 @@ struct RandomGen {
 
 class Engine {
 public:
-    Engine(sf::RenderWindow& window, ConfigReader& config);  // Передаём основные настройки
-    settings::GAME_STATE update(float& global_time);          // основная функция игры
+    Engine(sf::RenderWindow& window, ConfigReader& config);  // передаём основные настройки
+    settings::GAME_STATE update(float& global_time);         // основная функция игры
+    void reload();                                           // пересоздает змейку
 private:
+    ConfigReader& _config_ref;
     sf::RenderWindow& _window_ref;            // окно для отрисовки
     Snake _snake;                             // змейка
     Map _map;                                 // карта

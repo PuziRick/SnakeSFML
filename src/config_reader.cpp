@@ -1,5 +1,6 @@
 #include "config_reader.h"
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
 size_t snake::findNameOfVaribale(std::string_view& str, size_t start_pos) {
@@ -298,6 +299,14 @@ snake::SettingChanger::~SettingChanger() {
     if (!hasChangedSettings()) {
         return;
     }
+    if (_changed_setting.find("WINDOW_SCREEN") != _changed_setting.end()) {
+        if (_changed_setting.find("MAP_SIZE") != _changed_setting.end()) {
+            reScaleGameObj(); // скелинг игровые объекты
+        }
+        reSizeBackGround();  // скелинг фона главного меню
+        // to do reScaleButton
+    }
+
     // открываем поток для записи новых значений настроек
     std::ofstream _file_out(_config_ref.getFileName());
     std::string config_text(std::move(makeTextFromConfig(_config_ref)));
@@ -331,4 +340,42 @@ void snake::SettingChanger::changeValue(const std::string &name_of_setting, cons
         // если настройка была найдена, то записываем её в _changed_setting
         _changed_setting.insert(name_of_setting);
     }
+}
+
+void snake::SettingChanger::reScaleGameObj() {
+    // данные для расчетов
+    sf::Vector2u window_widscreen = findVector2u("WINDOWS_WIDSCREEN", _config_ref);
+    sf::Vector2u map_size = findVector2u("MAP_SIZE", _config_ref);
+    
+    sf::Vector2u snake_tile_size = findVector2u("SNAKE_TILE_SIZE", _config_ref);
+    sf::Vector2u eat_tile_size = findVector2u("EAT_TILE_SIZE", _config_ref);
+    sf::Vector2u map_tile_size = findVector2u("MAP_TILE_SIZE", _config_ref);
+
+    // По хитрой/загадочной формуле рассчитываем новое значение коэф. сжатия изображения
+    sf::Vector2f snake_scale = calcNewScale(window_widscreen, map_size, snake_tile_size);
+    sf::Vector2f map_scale = calcNewScale(window_widscreen, map_size, map_tile_size);
+    sf::Vector2f eat_scale = calcNewScale(window_widscreen, map_size, eat_tile_size);
+
+    // Перезаписываем конфиг
+    changeValue("SNAKE_SCALE", {std::to_string(snake_scale.x), std::to_string(snake_scale.y)});
+    changeValue("EAT_SCALE", {std::to_string(eat_scale.x), std::to_string(eat_scale.y)});
+    changeValue("MAP_SCALE", {std::to_string(map_scale.x), std::to_string(map_scale.y)});
+}
+
+void snake::SettingChanger::reSizeBackGround() {
+    // данные для расчетов
+    sf::Vector2u window_widscreen = findVector2u("WINDOWS_WIDSCREEN", _config_ref);
+    sf::Vector2f background_scale = findVector2f("BACKGROUND_SCALE", _config_ref);
+    sf::Vector2u background_tile_size = findVector2u("BACKGROUND_TILE_SIZE", _config_ref);
+    // считаем необходимое количество
+    sf::Vector2f num_of_texture = {static_cast<float>(window_widscreen.x) / (static_cast<float>(background_tile_size.x) * background_scale.x), 
+                                   static_cast<float>(window_widscreen.x) / (static_cast<float>(background_tile_size.x) * background_scale.x)};
+    sf::Vector2u int_num_of_tex = {static_cast<unsigned int>(std::ceil(num_of_texture.x)), static_cast<unsigned int>(std::ceil(num_of_texture.y))};
+    // Перезаписываем конфиг
+    changeValue("BACKGROUND_SIZE", {std::to_string(int_num_of_tex.x), std::to_string(int_num_of_tex.y)});
+}
+
+sf::Vector2f snake::SettingChanger::calcNewScale(sf::Vector2u screen_size, sf::Vector2u map_size, sf::Vector2u tile_size) {
+    return {static_cast<float>(screen_size.x) / (static_cast<float>(tile_size.x) * static_cast<float>(map_size.x))
+    , static_cast<float>(screen_size.y) / (static_cast<float>(tile_size.y) * static_cast<float>(map_size.y))};
 }

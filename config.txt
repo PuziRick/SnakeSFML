@@ -3,7 +3,7 @@ WINDOWS_NAME = "snake"
 
 SNAKE_TILESET_NAME = "images/snake.png"
 SNAKE_TILE_SIZE = {64,64}
-SNAKE_SCALE = 0.5
+SNAKE_SCALE = {0.5, 0.5}
 SNAKE_POS_TILES = {
     HEAD_UP  =  {0,0} ,
     HEAD_DOWN = {2,0} ,
@@ -25,7 +25,7 @@ SNAKE_START_SIZE = 3
 
 MAP_TILESET_NAME = "images/grass.png"
 MAP_TILE_SIZE = {50,50}
-MAP_SCALE = 0.64
+MAP_SCALE = {0.64, 0.64}
 MAP_POS_TILES = {
     TILES_0 = {0,0} ,
     TILES_1 = {1,0} ,
@@ -49,7 +49,7 @@ MAP_SIZE = {30,20}
 
 EAT_IMAGE_NAME = "images/apple.png"
 EAT_TILE_SIZE = {64,64}
-EAT_SCALE = 0.5
+EAT_SCALE = {0.5, 0.5}
 EAT_POS_TILES = {0,0}
 
 GAME_SPEED = NORMAL
@@ -58,7 +58,7 @@ FONT_NAME = "fonts/Radiotechnika.ttf"
 
 BUTTON_TILESET_NAME = "images/button.png"
 BUTTON_TILE_SIZE = {645,140}
-BUTTON_SCALE = 0.55
+BUTTON_SCALE = {0.55, 0.55}
 BUTTON_POS_TILES = {
     NORMAL = {0,0} ,
     ACTIVE = {0,1} ,
@@ -67,7 +67,7 @@ BUTTON_POS_TILES = {
 
 BACKGROUND_TILESET_NAME = "images/background.png"
 BACKGROUND_TILE_SIZE = {32,40}
-BACKGROUND_SCALE = 4.0
+BACKGROUND_SCALE = {4.0, 4.0}
 BACKGROUND_POS_TILES = {
     TILES_0 = {0,0}
 }
