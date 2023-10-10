@@ -10,7 +10,7 @@
 
 namespace snake {
 
-std::vector<Button> creatDefaultButtons(sf::Font& font);
+std::vector<Button> creatButtons(ConfigReader& config, sf::Font& font);
 std::vector<DrawButton> creatDrawButton(sf::RenderWindow& window, TileSet& tiles, std::vector<Button>& buttons, ConfigReader& config);
 sf::Font creatFont(const ConfigReader& config);
 DrawMap creatDrawBackground(sf::RenderWindow& window, snake::TileSet& tile_set, const snake::Map& background, const ConfigReader& config);

@@ -245,6 +245,22 @@ std::string snake::findString(const std::string &name_of_setting, const ConfigRe
     return find_value.front();
 }
 
+// позаимствовал у сообщества
+// https://riptutorial.com/cplusplus/example/4190/conversion-to-std--wstring
+#include <codecvt>
+#include <locale>
+
+std::vector<std::wstring> snake::findArrWstring(const std::string &name_of_setting, const ConfigReader &config) {
+    std::vector<std::string> find_value = findValue(name_of_setting, config);
+    std::vector<std::wstring> result;
+    result.reserve(find_value.size());
+    for (size_t i = 0; i < find_value.size(); ++i) {
+        std::wstring w_str = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(find_value[i]);
+        result.push_back(w_str);
+    }
+    return result;
+}
+
 std::string snake::makeTextFromConfig(const ConfigReader& config_ref) {
     const std::vector<snake::SettingsData>& settings_cref = config_ref.getAllSettings();
     std::string result;
@@ -299,10 +315,8 @@ snake::SettingChanger::~SettingChanger() {
     if (!hasChangedSettings()) {
         return;
     }
-    if (_changed_setting.find("WINDOW_SCREEN") != _changed_setting.end()) {
-        if (_changed_setting.find("MAP_SIZE") != _changed_setting.end()) {
-            reScaleGameObj(); // скелинг игровые объекты
-        }
+    if (_changed_setting.find("WINDOW_SCREEN") != _changed_setting.end() || _changed_setting.find("MAP_SIZE") != _changed_setting.end()) {
+        reScaleGameObj();    // скелинг игровых объектов
         reSizeBackGround();  // скелинг фона главного меню
         // to do reScaleButton
     }

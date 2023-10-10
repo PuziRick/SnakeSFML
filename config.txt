@@ -74,3 +74,9 @@ BACKGROUND_POS_TILES = {
 
 BACKGROUND_NUMBER_OF_TEXTURES = 1
 BACKGROUND_SIZE = {30,16}
+
+MENU_BUTTONS_NAME = {
+    START = "старт"
+    EXIT = "выйти"
+    SETTINGS = "настройки"
+}

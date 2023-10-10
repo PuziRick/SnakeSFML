@@ -1,12 +1,15 @@
 #include "menu.h"
 #include <iostream>
+#include <string>
 
-std::vector<snake::Button> snake::creatDefaultButtons(sf::Font& font) {
-    std::vector<Button> buttons = {
-        Button(L"старт", font) ,
-        Button(L"настройки", font) ,
-        Button(L"выйти", font)
-    };
+std::vector<snake::Button> snake::creatButtons(ConfigReader& config, sf::Font& font) {
+    std::vector<std::wstring> buttons_name = findArrWstring("MENU_BUTTONS_NAME", config);
+    std::vector<Button> buttons;
+    buttons.reserve(buttons_name.size());
+    for (size_t i = 0; i < buttons_name.size(); ++i) {
+        Button button_i(buttons_name[i], font);
+        buttons.push_back(button_i);
+    }
     return buttons;
 }
 
@@ -37,7 +40,7 @@ snake::DrawMap snake::creatDrawBackground(sf::RenderWindow &window, snake::TileS
 snake::Menu::Menu(sf::RenderWindow& window, ConfigReader &config)
     : _window_ref(window)
     , _font(creatFont(config))
-    , _buttons(std::move(creatDefaultButtons(_font)))
+    , _buttons(std::move(creatButtons(config, _font)))
     , _tile_set_button(snake::settings::creatTileSet(snake::settings::loadButtonSettings(config)._tiles))
     , _draw_buttons(creatDrawButton(_window_ref, _tile_set_button, _buttons, config))
     , _background(std::move(snake::settings::creatMap(config, "BACKGROUND"))) 

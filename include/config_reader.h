@@ -61,6 +61,7 @@ sf::Vector2u findVector2u(const std::string& name_of_setting, const ConfigReader
 float findFloat(const std::string& name_of_setting, const ConfigReader& config);
 int findInt(const std::string& name_of_setting, const ConfigReader& config);
 std::string findString(const std::string& name_of_setting, const ConfigReader& config);
+std::vector<std::wstring> findArrWstring(const std::string& name_of_setting, const ConfigReader& config);
 
 // Функции переводящие данные из config в строку
 std::string makeTextFromConfig(const ConfigReader& config_ref);
