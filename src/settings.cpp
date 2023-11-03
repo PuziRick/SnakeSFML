@@ -133,9 +133,13 @@ std::map<snake::BUTTON_STATES, sf::Vector2u> snake::settings::creatButtonPosOfTi
     }
     return result;
 }
-
+#include <iostream>
 snake::settings::WindowSettings snake::settings::loadWindowSettings(const snake::ConfigReader &config) {
-    sf::Vector2u WIDESCREEN = findVector2u("WINDOWS_WIDSCREEN", config);
+    std::string widscreen_default = findString("WINDOW_WIDSCREEN_DEFAULT", config);
+    sf::Vector2u WIDESCREEN = findVector2u("WINDOWS_WIDSCREEN." + widscreen_default, config);
+    if (WIDESCREEN.x == 0u || WIDESCREEN.y == 0u) {
+        WIDESCREEN = {960, 540};
+    }
     std::string WINDOW_NAME = findString("WINDOWS_NAME", config);
     WindowSettings window_conf(WIDESCREEN, WINDOW_NAME);
     return window_conf;

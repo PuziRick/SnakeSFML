@@ -2,23 +2,27 @@
 #include "settings.h"
 #include "menu.h"
 #include "engine.h"
+#include <iostream>
 
 snake::Game::Game(const std::string& config_name = "config.txt") 
     : _config(config_name) {
-
     // Создаем окно
     settings::WindowSettings settings = settings::loadWindowSettings(_config);
     sf::RenderWindow _window(sf::VideoMode(settings._widescreen_x, settings._widescreen_y), settings._window_name);
-
     // Задаем игровое время
     sf::Clock clock;
     float global_time = 0;    // глобальное время
+
+    {
+        SettingChanger setting_changer(_config);
+        setting_changer.changeValue("WINDOW_WIDSCREEN_DEFAULT", {findString("WINDOW_WIDSCREEN_DEFAULT", _config)});
+        _config.reload();
+    }
 
     // Создаем стартовое меню
     Menu menu(_window, _config);
     // Создаем объект игрового движка
     Engine engine(_window, _config);
-
 
     // текущее состояние игры
     settings::GAME_STATE game_state = settings::GAME_STATE::MENU;

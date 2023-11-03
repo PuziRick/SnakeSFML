@@ -1,4 +1,14 @@
-WINDOWS_WIDSCREEN = {960, 640}
+WINDOW_WIDSCREEN_DEFAULT = "SCREEN_1"
+
+WINDOWS_WIDSCREEN = {
+    SCREEN_0 = {720, 480} ,
+    SCREEN_1 = {960, 540} ,
+    SCREEN_2 = {1280, 720} ,
+    SCREEN_3 = {1366, 768} ,
+    SCREEN_4 = {1600, 900} ,
+    SCREEN_5 = {1920, 1080}
+}
+
 WINDOWS_NAME = "snake"
 
 SNAKE_TILESET_NAME = "images/snake.png"
@@ -76,7 +86,7 @@ BACKGROUND_NUMBER_OF_TEXTURES = 1
 BACKGROUND_SIZE = {30,16}
 
 MENU_BUTTONS_NAME = {
-    START = "старт"
-    EXIT = "выйти"
-    SETTINGS = "настройки"
+    "старт" ,
+    "выйти" ,
+    "настройки"
 }

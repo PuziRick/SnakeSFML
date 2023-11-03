@@ -315,7 +315,7 @@ snake::SettingChanger::~SettingChanger() {
     if (!hasChangedSettings()) {
         return;
     }
-    if (_changed_setting.find("WINDOW_SCREEN") != _changed_setting.end() || _changed_setting.find("MAP_SIZE") != _changed_setting.end()) {
+    if (_changed_setting.find("WINDOW_WIDSCREEN_DEFAULT") != _changed_setting.end() || _changed_setting.find("MAP_SIZE") != _changed_setting.end()) {
         reScaleGameObj();    // скелинг игровых объектов
         reSizeBackGround();  // скелинг фона главного меню
         // to do reScaleButton
@@ -358,7 +358,7 @@ void snake::SettingChanger::changeValue(const std::string &name_of_setting, cons
 
 void snake::SettingChanger::reScaleGameObj() {
     // данные для расчетов
-    sf::Vector2u window_widscreen = findVector2u("WINDOWS_WIDSCREEN", _config_ref);
+    sf::Vector2u window_widscreen = findVector2u("WINDOWS_WIDSCREEN." + findString("WINDOW_WIDSCREEN_DEFAULT", _config_ref), _config_ref);
     sf::Vector2u map_size = findVector2u("MAP_SIZE", _config_ref);
     
     sf::Vector2u snake_tile_size = findVector2u("SNAKE_TILE_SIZE", _config_ref);
@@ -378,7 +378,7 @@ void snake::SettingChanger::reScaleGameObj() {
 
 void snake::SettingChanger::reSizeBackGround() {
     // данные для расчетов
-    sf::Vector2u window_widscreen = findVector2u("WINDOWS_WIDSCREEN", _config_ref);
+    sf::Vector2u window_widscreen = findVector2u("WINDOWS_WIDSCREEN." + findString("WINDOW_WIDSCREEN_DEFAULT", _config_ref), _config_ref);
     sf::Vector2f background_scale = findVector2f("BACKGROUND_SCALE", _config_ref);
     sf::Vector2u background_tile_size = findVector2u("BACKGROUND_TILE_SIZE", _config_ref);
     // считаем необходимое количество

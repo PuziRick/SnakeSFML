@@ -37,4 +37,13 @@ private:
     settings::GAME_STATE chooseAction(Button& button);
 };
 
+/*
+class SettingMenu {
+public:
+    SettingMenu(sf::RenderWindow& window, ConfigReader& config);
+private:
+    sf::RenderWindow& _window_ref;         // ссылка на окно
+    sf::Font _font;                        // шрифт для текста на кнопках
+};
+*/
 } // конец namespace snake
